@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CitaService, Cita } from '../services/cita.service';
+import { CitaService, Cita } from '../../services/cita.service';
 
 @Component({
   selector: 'app-cita',

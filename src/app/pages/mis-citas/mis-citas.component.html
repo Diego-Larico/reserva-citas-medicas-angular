@@ -1,0 +1,125 @@
+<div class="citas-container">
+  <div class="citas-header">
+    <h2><i class="fas fa-calendar-check me-2"></i> Mis Citas</h2>
+    <button class="btn-nueva-cita" routerLink="/dashboard/nueva-cita">
+      <i class="fas fa-plus-circle me-1"></i> Nueva Cita
+    </button>
+  </div>
+
+  <div class="filtros-container">
+    <div class="filtro-group">
+      <label for="filtroEstado"><i class="fas fa-filter me-1"></i>Filtrar por estado:</label>
+      <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+        <option value="todas">Todas las citas</option>
+        <option value="Pendiente">Pendientes</option>
+        <option value="Confirmada">Confirmadas</option>
+        <option value="Cancelada">Canceladas</option>
+        <option value="Completada">Completadas</option>
+      </select>
+    </div>
+    
+    <div class="filtro-group">
+      <label for="filtroFecha"><i class="fas fa-calendar-alt me-1"></i>Filtrar por fecha:</label>
+      <input type="date" id="filtroFecha" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()">
+    </div>
+  </div>
+
+  <div class="citas-list">
+    <div *ngIf="citasFiltradas.length === 0" class="no-citas">
+      <i class="fas fa-calendar-times"></i>
+      <p>No tienes citas programadas</p>
+      <button class="btn-agendar" routerLink="/dashboard/nueva-cita">Agendar nueva cita</button>
+    </div>
+
+    <div *ngFor="let cita of citasFiltradas" class="cita-card">
+      <div class="cita-header">
+        <div class="cita-fecha">
+          <div class="fecha-dia">{{ cita.fecha_hora | date:'dd' }}</div>
+          <div class="fecha-mes">{{ cita.fecha_hora | date:'MMM' | uppercase }}</div>
+          <div class="fecha-hora">{{ cita.fecha_hora | date:'HH:mm' }}</div>
+        </div>
+        <div class="cita-info">
+          <h3>{{ getEspecialidadNombre(cita.idEspecialidad) }}</h3>
+          <p class="medico-nombre">
+            <i class="fas fa-user-md"></i> Dr. {{ getMedicoNombre(cita.idMedico) }}
+          </p>
+        </div>
+        <div class="cita-estado" [ngClass]="{
+          'estado-pendiente': cita.estado === 'Pendiente',
+          'estado-confirmada': cita.estado === 'Confirmada',
+          'estado-cancelada': cita.estado === 'Cancelada',
+          'estado-completada': cita.estado === 'Completada'
+        }">
+          {{ cita.estado }}
+        </div>
+      </div>
+      
+      <div class="cita-detalle">
+        <p><i class="fas fa-sticky-note"></i> <strong>Motivo:</strong> {{ cita.motivo || 'Consulta general' }}</p>
+      </div>
+      
+      <div class="cita-acciones">
+        <button *ngIf="cita.estado === 'Pendiente'" class="btn-confirmar" (click)="confirmarCita(cita.idCita)">
+          <i class="fas fa-check-circle"></i> Confirmar
+        </button>
+        <button *ngIf="cita.estado === 'Pendiente' || cita.estado === 'Confirmada'" class="btn-cancelar" (click)="cancelarCita(cita.idCita)">
+          <i class="fas fa-times-circle"></i> Cancelar
+        </button>
+        <button class="btn-detalle" (click)="verDetalleCita(cita)">
+          <i class="fas fa-info-circle"></i> Detalles
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalles de cita -->
+  <div *ngIf="citaSeleccionada" class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="btn-cerrar-modal" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <h3>Detalles de la cita</h3>
+      
+      <div class="modal-body">
+        <div class="detalle-item">
+          <label><i class="fas fa-calendar-alt"></i> Fecha y hora:</label>
+          <p>{{ citaSeleccionada.fecha_hora | date:'EEEE, d MMMM y, HH:mm' }}</p>
+        </div>
+        
+        <div class="detalle-item">
+          <label><i class="fas fa-user-md"></i> Médico:</label>
+          <p>Dr. {{ getMedicoNombre(citaSeleccionada.idMedico) }}</p>
+        </div>
+        <div class="detalle-item">
+          <label><i class="fas fa-stethoscope"></i> Especialidad:</label>
+          <p>{{ getEspecialidadNombre(citaSeleccionada.idEspecialidad) }}</p>
+        </div>
+        
+        <div class="detalle-item">
+          <label><i class="fas fa-sticky-note"></i> Motivo:</label>
+          <p>{{ citaSeleccionada.motivo || 'Consulta general' }}</p>
+        </div>
+        
+        <div class="detalle-item">
+          <label><i class="fas fa-info-circle"></i> Estado:</label>
+          <p [ngClass]="{
+            'estado-pendiente': citaSeleccionada.estado === 'Pendiente',
+            'estado-confirmada': citaSeleccionada.estado === 'Confirmada',
+            'estado-cancelada': citaSeleccionada.estado === 'Cancelada',
+            'estado-completada': citaSeleccionada.estado === 'Completada'
+          }">
+            {{ citaSeleccionada.estado }}
+          </p>
+        </div>
+      </div>
+      
+      <div class="modal-acciones">
+        <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+        <button *ngIf="citaSeleccionada.estado === 'Pendiente'" class="btn-confirmar-modal" (click)="confirmarCita(citaSeleccionada.idCita)">
+          Confirmar cita
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

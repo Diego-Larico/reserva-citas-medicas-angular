@@ -18,13 +18,15 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   login() {
     console.log('Datos enviados:', this.email, this.password);
     this.authService.login(this.email, this.password).subscribe({
       next: (usuario) => {
         console.log('Login correcto', usuario);
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+        this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         console.error('Error en login', error);
