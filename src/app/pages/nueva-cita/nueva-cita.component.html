@@ -1,0 +1,94 @@
+<div class="nueva-cita-container">
+  <div class="form-header">
+    <h2><i class="fas fa-calendar-plus"></i> Nueva Cita Médica</h2>
+    <p>Complete el formulario para agendar una nueva cita</p>
+  </div>
+
+  <form (ngSubmit)="agendarCita()" class="cita-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="especialidad"><i class="fas fa-stethoscope"></i> Especialidad Médica</label>
+        <select id="especialidad" [(ngModel)]="nuevaCita.idEspecialidad" name="especialidad" required 
+                (change)="cargarMedicos()">
+          <option value="" disabled selected>Seleccione una especialidad</option>
+          <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="medico"><i class="fas fa-user-md"></i> Médico</label>
+        <select id="medico" [(ngModel)]="nuevaCita.idMedico" name="medico" required [disabled]="!medicos.length">
+          <option value="" disabled selected>Seleccione un médico</option>
+          <option *ngFor="let med of medicosFiltrados" [value]="med.idUsuario">
+            Dr. {{ med.nombre }} {{ med.apPaterno }} ({{ getEspecialidadNombrePorId(med.idEspecialidad) }})
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fecha"><i class="fas fa-calendar-day"></i> Fecha</label>
+        <input type="date" id="fecha" [(ngModel)]="fechaSeleccionada" name="fecha" required 
+               (change)="cargarHorariosDisponibles()" [min]="fechaActual">
+      </div>
+
+      <div class="form-group">
+        <label for="hora"><i class="fas fa-clock"></i> Hora</label>
+        <select id="hora" [(ngModel)]="nuevaCita.fecha_hora" name="hora" required [disabled]="!horariosDisponibles.length">
+          <option value="" disabled selected>Seleccione una hora</option>
+          <option *ngFor="let hora of horariosDisponibles" [value]="hora.value">{{ hora.display }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="motivo"><i class="fas fa-comment-medical"></i> Motivo de la consulta</label>
+      <textarea id="motivo" [(ngModel)]="nuevaCita.motivo" name="motivo" 
+                placeholder="Describa brevemente el motivo de su consulta"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar" routerLink="/dashboard/mis-citas">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button type="submit" class="btn-agendar" [disabled]="!formularioValido()">
+        <i class="fas fa-calendar-check"></i> Agendar Cita
+      </button>
+    </div>
+
+    <div *ngIf="mensajeError" class="error-message">
+      <i class="fas fa-exclamation-circle"></i> {{ mensajeError }}
+    </div>
+  </form>
+
+  <!-- Modal de confirmación -->
+  <div *ngIf="mostrarModalConfirmacion" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-check-circle"></i> Cita Agendada</h3>
+        <button (click)="cerrarModal()" class="btn-cerrar-modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Su cita ha sido agendada exitosamente:</p>
+        
+        <div class="cita-info">
+          <p><strong>Especialidad:</strong> {{ citaConfirmada.especialidad?.nombre }}</p>
+          <p><strong>Médico:</strong> Dr. {{ citaConfirmada.medico?.nombre }} {{ citaConfirmada.medico?.apPaterno }}</p>
+          <p><strong>Fecha:</strong> {{ citaConfirmada.fecha_hora | date:'EEEE, d MMMM y' }}</p>
+          <p><strong>Hora:</strong> {{ citaConfirmada.fecha_hora | date:'HH:mm' }}</p>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button (click)="irAMisCitas()" class="btn-primary">
+          <i class="fas fa-calendar-alt"></i> Ver mis citas
+        </button>
+        <button (click)="agendarOtraCita()" class="btn-secondary">
+          <i class="fas fa-plus-circle"></i> Agendar otra cita
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
