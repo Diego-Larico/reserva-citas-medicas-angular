@@ -22,6 +22,17 @@ export class DashboardComponent {
       else if (this.user && this.user.idRol === 2) this.userRol = 'medico';
       else if (this.user && this.user.idRol === 3) this.userRol = 'paciente';
     }
+
+    // Redirección automática según el rol si la ruta es /dashboard
+    if (window.location.pathname.endsWith('/dashboard') || window.location.pathname.endsWith('/dashboard/')) {
+      if (this.userRol === 'medico') {
+        this.router.navigate(['/dashboard/agenda']);
+      } else if (this.userRol === 'paciente') {
+        this.router.navigate(['/dashboard/citas']);
+      } else if (this.userRol === 'admin') {
+        this.router.navigate(['/dashboard/usuarios']);
+      }
+    }
   }
 
   logout() {

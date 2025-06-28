@@ -1,0 +1,234 @@
+<div class="agenda-container">
+  <div class="agenda-header">
+    <h2><i class="fas fa-calendar-alt me-2"></i> Mi Agenda</h2>
+    <div class="fecha-control">
+      <button (click)="cambiarFecha(-1)"><i class="fas fa-chevron-left"></i></button>
+      <h3>{{ fechaActual | date:'EEEE, d MMMM y' }}</h3>
+      <button (click)="cambiarFecha(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <div class="filtros-container">
+    <div class="filtro-group">
+      <label for="filtroEstado"><i class="fas fa-filter"></i> Estado de cita:</label>
+      <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cargarCitas()">
+        <option value="todas">Todas las citas</option>
+        <option value="Confirmada">Confirmadas</option>
+        <option value="Pendiente">Pendientes</option>
+        <option value="Completada">Completadas</option>
+        <option value="Cancelada">Canceladas</option>
+      </select>
+    </div>
+    
+    <div class="filtro-group">
+      <label for="filtroPaciente"><i class="fas fa-user"></i> Filtrar paciente:</label>
+      <input type="text" id="filtroPaciente" [(ngModel)]="filtroPaciente" 
+             (input)="cargarCitas()" placeholder="Nombre del paciente">
+    </div>
+    
+    <div class="filtro-group">
+      <button class="btn-refresh" (click)="cargarCitas()">
+        <i class="fas fa-sync-alt"></i> Actualizar
+      </button>
+    </div>
+  </div>
+
+  <div class="agenda-content">
+    <div class="citas-list">
+      <div *ngIf="citasFiltradas.length === 0" class="no-citas">
+        <i class="fas fa-calendar-times"></i>
+        <p>No hay citas programadas para esta fecha</p>
+      </div>
+
+      <div *ngFor="let cita of citasFiltradas" class="cita-card">
+        <div class="cita-header">
+          <div class="cita-hora">
+            {{ cita.fecha_hora | date:'HH:mm' }}
+          </div>
+          <div class="cita-info">
+            <h3>{{ cita.paciente?.nombre }} {{ cita.paciente?.apPaterno }}</h3>
+            <p class="cita-motivo"><i class="fas fa-comment-medical"></i> {{ cita.motivo }}</p>
+          </div>
+          <div class="cita-estado" [ngClass]="{
+            'estado-pendiente': cita.estado === 'Pendiente',
+            'estado-confirmada': cita.estado === 'Confirmada',
+            'estado-cancelada': cita.estado === 'Cancelada',
+            'estado-completada': cita.estado === 'Completada'
+          }">
+            {{ cita.estado }}
+          </div>
+        </div>
+        
+        <div class="cita-detalle">
+          <p><i class="fas fa-id-card"></i> <strong>ID:</strong> {{ cita.idCita }}</p>
+          <p><i class="fas fa-history"></i> <strong>Historial:</strong> 
+            <span *ngIf="cita.historial">Registro #{{ cita.historial.idHistorial }}</span>
+            <span *ngIf="!cita.historial">Sin registro</span>
+          </p>
+          <p><i class="fas fa-phone"></i> <strong>Teléfono:</strong> {{ cita.paciente?.telefono || 'No disponible' }}</p>
+        </div>
+        
+        <div class="cita-acciones">
+          <button *ngIf="cita.estado === 'Pendiente'" class="btn-confirmar" (click)="confirmarCita(cita.idCita)">
+            <i class="fas fa-check"></i> Confirmar
+          </button>
+          <button *ngIf="cita.estado !== 'Completada' && cita.estado !== 'Cancelada'" class="btn-cancelar" (click)="cancelarCita(cita.idCita)">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button *ngIf="cita.estado === 'Confirmada'" class="btn-atender" (click)="iniciarAtencion(cita)">
+            <i class="fas fa-user-md"></i> Atender
+          </button>
+          <button *ngIf="cita.historial" class="btn-historial" (click)="verHistorial(cita.historial.idHistorial)">
+            <i class="fas fa-file-medical"></i> Ver Historial
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="resumen-dia">
+      <div class="resumen-card">
+        <div class="resumen-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="resumen-info">
+          <h4>Citas Totales</h4>
+          <p>{{ resumenDia.totalCitas }}</p>
+        </div>
+      </div>
+      
+      <div class="resumen-card">
+        <div class="resumen-icon">
+          <i class="fas fa-user-clock"></i>
+        </div>
+        <div class="resumen-info">
+          <h4>Por Atender</h4>
+          <p>{{ resumenDia.porAtender }}</p>
+        </div>
+      </div>
+      
+      <div class="resumen-card">
+        <div class="resumen-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="resumen-info">
+          <h4>Atendidas</h4>
+          <p>{{ resumenDia.atendidas }}</p>
+        </div>
+      </div>
+      
+      <div class="resumen-card">
+        <div class="resumen-icon">
+          <i class="fas fa-procedures"></i>
+        </div>
+        <div class="resumen-info">
+          <h4>Procedimientos</h4>
+          <p>{{ resumenDia.procedimientos }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Atención Médica -->
+  <div *ngIf="citaEnAtencion" class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="btn-cerrar-modal" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <h3>Atención Médica</h3>
+        <p>Dr. {{ usuario?.nombre }} {{ usuario?.apPaterno }} atendiendo a {{ citaEnAtencion.paciente?.nombre }} {{ citaEnAtencion.paciente?.apPaterno }}</p>
+      </div>
+      
+      <div class="modal-body">
+        <div class="paciente-info">
+          <div class="paciente-header">
+            <div class="paciente-avatar">
+              <img [src]="'https://ui-avatars.com/api/?name=' + citaEnAtencion.paciente?.nombre + ' ' + citaEnAtencion.paciente?.apPaterno + '&background=0D8ABC&color=fff'" alt="Paciente">
+            </div>
+            <div class="paciente-detalle">
+              <h4>{{ citaEnAtencion.paciente?.nombre }} {{ citaEnAtencion.paciente?.apPaterno }} {{ citaEnAtencion.paciente?.apMaterno }}</h4>
+              <p><i class="fas fa-calendar-alt"></i> {{ citaEnAtencion.paciente?.fechaNacimiento | date:'dd/MM/yyyy' }} ({{ calcularEdad(citaEnAtencion.paciente?.fechaNacimiento) }} años)</p>
+              <p><i class="fas fa-venus-mars"></i> {{ citaEnAtencion.paciente?.genero || 'No especificado' }}</p>
+            </div>
+          </div>
+          
+          <div class="paciente-historial">
+            <h5><i class="fas fa-file-medical-alt"></i> Antecedentes Relevantes</h5>
+            <p>{{ citaEnAtencion.paciente?.antecedentes || 'Sin antecedentes registrados' }}</p>
+          </div>
+        </div>
+        
+        <div class="atencion-form">
+          <h4><i class="fas fa-stethoscope"></i> Diagnóstico y Tratamiento</h4>
+          
+          <div class="form-group">
+            <label for="diagnostico">Diagnóstico Principal (CIE-10)</label>
+            <div class="input-with-button">
+              <input type="text" id="diagnostico" [(ngModel)]="historialTemporal.diagnosticoPrincipal" 
+                     placeholder="Ej: J06.9 - Infección aguda de las vías respiratorias superiores">
+              <button class="btn-buscar-cie"><i class="fas fa-search"></i> Buscar CIE-10</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="notas">Notas Médicas</label>
+            <textarea id="notas" [(ngModel)]="historialTemporal.notasMedicas" 
+                      placeholder="Detalles de la consulta, observaciones, etc."></textarea>
+          </div>
+          
+          <div class="tratamientos-container">
+            <h5><i class="fas fa-pills"></i> Tratamientos Prescritos</h5>
+            
+            <div *ngFor="let tratamiento of tratamientosTemporales; let i = index" class="tratamiento-item">
+              <div class="tratamiento-header">
+                <h6>Medicamento {{ i + 1 }}</h6>
+                <button class="btn-eliminar" (click)="eliminarTratamiento(i)"><i class="fas fa-trash"></i></button>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Medicamento</label>
+                  <input type="text" [(ngModel)]="tratamiento.medicamento" placeholder="Nombre del medicamento">
+                </div>
+                
+                <div class="form-group">
+                  <label>Dosis</label>
+                  <input type="text" [(ngModel)]="tratamiento.dosis" placeholder="Ej: 500mg">
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Frecuencia</label>
+                  <input type="text" [(ngModel)]="tratamiento.frecuencia" placeholder="Ej: Cada 8 horas">
+                </div>
+                
+                <div class="form-group">
+                  <label>Duración</label>
+                  <input type="text" [(ngModel)]="tratamiento.duracion" placeholder="Ej: 7 días">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Instrucciones</label>
+                <textarea [(ngModel)]="tratamiento.instrucciones" placeholder="Instrucciones adicionales"></textarea>
+              </div>
+            </div>
+            
+            <button class="btn-agregar-tratamiento" (click)="agregarTratamiento()">
+              <i class="fas fa-plus-circle"></i> Añadir otro medicamento
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarAtencion()">
+          <i class="fas fa-save"></i> Guardar Atención
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

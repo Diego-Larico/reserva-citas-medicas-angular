@@ -2,15 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Usuario } from '../models/usuario';
 
 export interface Cita {
-  idCita: number
-  idPaciente: number
-  idMedico: number
-  idEspecialidad: number
-  fecha_hora: string
-  motivo: string
-  estado: string
+  idCita: number;
+  idPaciente: number;
+  idMedico: number;
+  idEspecialidad: number;
+  fecha_hora: string;
+  motivo: string;
+  estado: string;
+  paciente?: Usuario; // <-- Añadido para enriquecer la cita con datos del paciente
+  historial?: any;    // <-- Opcional, para historial clínico si lo agregas después
 }
 
 @Injectable({
