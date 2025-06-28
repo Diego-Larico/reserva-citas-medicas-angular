@@ -8,31 +8,63 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+
+    <!-- Menú para Pacientes -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
+        <!-- Menú para Pacientes -->
+        <li class="nav-item" *ngIf="userRol === 'paciente'">
           <a class="nav-link" routerLink="/dashboard/citas" routerLinkActive="active">
             <i class="fas fa-calendar-check me-1"></i> Mis Citas
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="userRol === 'paciente'">
           <a class="nav-link" routerLink="/dashboard/nueva-cita" routerLinkActive="active">
             <i class="fas fa-plus-circle me-1"></i> Nueva Cita
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="userRol === 'paciente'">
           <a class="nav-link" routerLink="/dashboard/medicos" routerLinkActive="active">
             <i class="fas fa-user-md me-1"></i> Médicos
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="userRol === 'paciente'">
           <a class="nav-link" routerLink="/dashboard/historial" routerLinkActive="active">
             <i class="fas fa-file-medical me-1"></i> Historial
           </a>
         </li>
+
+        <!-- Menú para Médicos -->
+        <li class="nav-item" *ngIf="userRol === 'medico'">
+          <a class="nav-link" routerLink="/dashboard/agenda" routerLinkActive="active">
+            <i class="fas fa-calendar-alt me-1"></i> Mi Agenda
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="userRol === 'medico'">
+          <a class="nav-link" routerLink="/dashboard/pacientes" routerLinkActive="active">
+            <i class="fas fa-users me-1"></i> Mis Pacientes
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="userRol === 'medico'">
+          <a class="nav-link" routerLink="/dashboard/historiales" routerLinkActive="active">
+            <i class="fas fa-file-medical me-1"></i> Historiales Médicos
+          </a>
+        </li>
+
+        <!-- Menú para Administradores -->
+        <li class="nav-item" *ngIf="userRol === 'admin'">
+          <a class="nav-link" routerLink="/dashboard/usuarios" routerLinkActive="active">
+            <i class="fas fa-user-cog me-1"></i> Usuarios
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="userRol === 'admin'">
+          <a class="nav-link" routerLink="/dashboard/reportes" routerLinkActive="active">
+            <i class="fas fa-chart-bar me-1"></i> Reportes
+          </a>
+        </li>
       </ul>
       
+
       <div class="d-flex align-items-center">
         <div class="dropdown">
           <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle user-dropdown" 
