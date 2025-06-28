@@ -5,6 +5,7 @@ import { CitaService, Cita } from '../../services/cita.service';
 import { Usuario } from '../../models/usuario';
 import { EspecialidadService, Especialidad } from '../../services/especialidad.service';
 import { UsuarioService } from '../../services/usuario.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mi-agenda-medico',
@@ -136,25 +137,51 @@ export class MiAgendaMedicoComponent implements OnInit {
     };
   }
 
-  confirmarCita(idCita: number): void {
-    const cita = this.citas.find(c => c.idCita === idCita);
-    if (cita) {
-      cita.estado = 'Confirmada';
-      this.citaService.actualizarCita(cita).subscribe(() => {
-        this.aplicarFiltros();
-        this.calcularResumenDia();
-      });
+  async confirmarCita(idCita: number): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Confirmar cita?',
+      text: '¿Estás seguro de que deseas confirmar esta cita?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#218838',
+      cancelButtonColor: '#d33'
+    });
+    if (result.isConfirmed) {
+      const cita = this.citas.find(c => c.idCita === idCita);
+      if (cita) {
+        cita.estado = 'Confirmada';
+        this.citaService.actualizarCita(cita).subscribe(() => {
+          this.aplicarFiltros();
+          this.calcularResumenDia();
+          Swal.fire('Cita confirmada', '', 'success');
+        });
+      }
     }
   }
 
-  cancelarCita(idCita: number): void {
-    const cita = this.citas.find(c => c.idCita === idCita);
-    if (cita) {
-      cita.estado = 'Cancelada';
-      this.citaService.actualizarCita(cita).subscribe(() => {
-        this.aplicarFiltros();
-        this.calcularResumenDia();
-      });
+  async cancelarCita(idCita: number): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Cancelar cita?',
+      text: '¿Estás seguro de que deseas cancelar esta cita?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6'
+    });
+    if (result.isConfirmed) {
+      const cita = this.citas.find(c => c.idCita === idCita);
+      if (cita) {
+        cita.estado = 'Cancelada';
+        this.citaService.actualizarCita(cita).subscribe(() => {
+          this.aplicarFiltros();
+          this.calcularResumenDia();
+          Swal.fire('Cita cancelada', '', 'success');
+        });
+      }
     }
   }
 
@@ -208,8 +235,18 @@ export class MiAgendaMedicoComponent implements OnInit {
     return edad;
   }
 
-  guardarAtencion(): void {
-    if (this.citaEnAtencion) {
+  async guardarAtencion(): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Guardar atención médica?',
+      text: '¿Deseas guardar los datos de la atención y finalizar la cita?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#218838',
+      cancelButtonColor: '#d33'
+    });
+    if (result.isConfirmed && this.citaEnAtencion) {
       this.citaEnAtencion.estado = 'Completada';
       (this.citaEnAtencion as any).historial = {
         idHistorial: Math.floor(Math.random() * 1000) + 1, // Simulado
@@ -221,6 +258,7 @@ export class MiAgendaMedicoComponent implements OnInit {
         this.aplicarFiltros();
         this.calcularResumenDia();
         this.cerrarModal();
+        Swal.fire('Atención guardada', '', 'success');
       });
     }
   }

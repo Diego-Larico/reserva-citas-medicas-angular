@@ -729,3 +729,27 @@
     box-shadow: 0 4px 12px rgba(42, 124, 199, 0.2);
   }
 }
+
+/* SweetAlert2 custom styles for integration with the app's color palette */
+.swal2-popup-custom {
+  border-radius: 16px !important;
+  box-shadow: 0 6px 32px rgba(26,90,158,0.10) !important;
+  font-family: inherit !important;
+}
+.swal2-confirm-custom {
+  background: linear-gradient(135deg, #218838, #1a5a9e) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(33,136,56,0.10) !important;
+}
+.swal2-cancel-custom {
+  background: #e1ecf8 !important;
+  color: #1a5a9e !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(26,90,158,0.10) !important;
+}
+.swal2-cancel-custom:focus, .swal2-confirm-custom:focus {
+  box-shadow: 0 0 0 3px rgba(26,90,158,0.15) !important;
+}
