@@ -17,7 +17,7 @@
 
       <div class="form-group">
         <label for="medico"><i class="fas fa-user-md"></i> Médico</label>
-        <select id="medico" [(ngModel)]="nuevaCita.idMedico" name="medico" required [disabled]="!medicos.length">
+        <select id="medico" [(ngModel)]="nuevaCita.idMedico" name="medico" required [disabled]="!medicosFiltrados.length">
           <option value="" disabled selected>Seleccione un médico</option>
           <option *ngFor="let med of medicosFiltrados" [value]="med.idUsuario">
             Dr. {{ med.nombre }} {{ med.apPaterno }} ({{ getEspecialidadNombrePorId(med.idEspecialidad) }})
@@ -35,10 +35,7 @@
 
       <div class="form-group">
         <label for="hora"><i class="fas fa-clock"></i> Hora</label>
-        <select id="hora" [(ngModel)]="nuevaCita.fecha_hora" name="hora" required [disabled]="!horariosDisponibles.length">
-          <option value="" disabled selected>Seleccione una hora</option>
-          <option *ngFor="let hora of horariosDisponibles" [value]="hora.value">{{ hora.display }}</option>
-        </select>
+        <input type="time" id="hora" [(ngModel)]="nuevaCita.fecha_hora" name="hora" required step="1800" min="09:00" max="16:30">
       </div>
     </div>
 
@@ -49,8 +46,8 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn-cancelar" routerLink="/dashboard/mis-citas">
-        <i class="fas fa-times"></i> Cancelar
+      <button type="button" class="btn-cancelar" (click)="limpiarFormulario()">
+        <i class="fas fa-times"></i> Limpiar Datos
       </button>
       <button type="submit" class="btn-agendar" [disabled]="!formularioValido()">
         <i class="fas fa-calendar-check"></i> Agendar Cita
