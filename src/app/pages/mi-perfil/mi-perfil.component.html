@@ -8,7 +8,7 @@
     <div class="perfil-sidebar">
       <div class="usuario-card">
         <div class="usuario-avatar">
-          <img [src]="usuario.imagen || 'assets/images/user-avatar.png'" alt="Foto de perfil">
+          <img [src]="fotoPerfil" alt="Foto de perfil">
         </div>
         
         <div class="usuario-info">
@@ -40,24 +40,24 @@
           <div class="form-row">
             <div class="form-group">
               <label for="nombre"><i class="fas fa-signature"></i> Nombre(s)</label>
-              <input type="text" id="nombre" [(ngModel)]="usuario.nombre" name="nombre" required>
+              <input type="text" id="nombre" [(ngModel)]="usuarioEdit.nombre" name="nombre" required>
             </div>
             
             <div class="form-group">
               <label for="apPaterno"><i class="fas fa-signature"></i> Apellido Paterno</label>
-              <input type="text" id="apPaterno" [(ngModel)]="usuario.apPaterno" name="apPaterno" required>
+              <input type="text" id="apPaterno" [(ngModel)]="usuarioEdit.apPaterno" name="apPaterno" required>
             </div>
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label for="apMaterno"><i class="fas fa-signature"></i> Apellido Materno</label>
-              <input type="text" id="apMaterno" [(ngModel)]="usuario.apMaterno" name="apMaterno">
+              <input type="text" id="apMaterno" [(ngModel)]="usuarioEdit.apMaterno" name="apMaterno">
             </div>
             
             <div class="form-group">
               <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
-              <input type="email" id="email" [(ngModel)]="usuario.email" name="email" required>
+              <input type="email" id="email" [(ngModel)]="usuarioEdit.email" name="email" required>
             </div>
           </div>
           

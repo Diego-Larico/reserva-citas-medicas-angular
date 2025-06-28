@@ -8,4 +8,5 @@ export interface Usuario {
     password: string;
     idRol: number;
     idEspecialidad: number;
+    rol?: { idRol: number; nombre: string };
 }

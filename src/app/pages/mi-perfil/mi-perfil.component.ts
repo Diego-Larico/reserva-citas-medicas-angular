@@ -2,23 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface Usuario {
-  idUsuario: number;
-  nombre: string;
-  apPaterno: string;
-  apMaterno: string;
-  email: string;
-  telefono?: string;
-  fechaNacimiento?: string;
-  direccion?: string;
-  imagen?: string;
-  fechaRegistro: Date;
-  rol?: {
-    idRol: number;
-    nombre: string;
-  };
-}
+import { UsuarioService } from '../../services/usuario.service';
+import { Usuario } from '../../models/usuario';
+import Swal from 'sweetalert2';
 
 interface Preferencias {
   idioma: string;
@@ -52,21 +38,17 @@ interface RegistroReciente {
 })
 export class MiPerfilComponent implements OnInit {
   usuario: Usuario = {
-    idUsuario: 1,
-    nombre: 'Juan',
-    apPaterno: 'Pérez',
-    apMaterno: 'Gómez',
-    email: 'juan.perez@example.com',
-    telefono: '5551234567',
-    fechaNacimiento: '1985-06-15',
-    direccion: 'Calle Falsa 123, Col. Centro, CDMX',
-    imagen: '',
-    fechaRegistro: new Date('2020-03-15'),
-    rol: {
-      idRol: 3,
-      nombre: 'Paciente'
-    }
+    idUsuario: 0,
+    nombre: '',
+    apPaterno: '',
+    apMaterno: '',
+    usuario: '',
+    email: '',
+    password: '',
+    idRol: 3,
+    idEspecialidad: 1
   };
+  usuarioEdit: Usuario = { ...this.usuario };
 
   seccionActual: string = 'informacion';
   passwordActual: string = '';
@@ -84,48 +66,99 @@ export class MiPerfilComponent implements OnInit {
   };
 
   resumenHistorial: ResumenHistorial = {
-    totalCitas: 12,
-    totalProcedimientos: 3,
-    totalExamenes: 5,
-    especialistasVisitados: 4
+    totalCitas: 0,
+    totalProcedimientos: 0,
+    totalExamenes: 0,
+    especialistasVisitados: 0
   };
 
-  registrosRecientes: RegistroReciente[] = [
-    {
-      id: 1,
-      fecha: new Date('2023-05-15'),
-      titulo: 'Consulta de Cardiología',
-      especialidad: 'Cardiología',
-      medico: 'Carlos Mendoza'
-    },
-    {
-      id: 2,
-      fecha: new Date('2023-04-22'),
-      titulo: 'Examen de sangre completo',
-      especialidad: 'Laboratorio'
-    },
-    {
-      id: 3,
-      fecha: new Date('2023-03-10'),
-      titulo: 'Extracción de lunar',
-      especialidad: 'Dermatología',
-      medico: 'Laura Fernández'
+  registrosRecientes: RegistroReciente[] = [];
+
+  constructor(private router: Router, private usuarioService: UsuarioService) {}
+
+  ngOnInit(): void {
+    const userData = localStorage.getItem('usuario');
+    console.log('[Perfil] localStorage[usuario]:', userData);
+    if (userData) {
+      const user = JSON.parse(userData);
+      console.log('[Perfil] Usuario parseado:', user);
+      this.usuarioService.getUsuarioPorId(user.idUsuario).subscribe({
+        next: usuario => {
+          console.log('[Perfil] Respuesta backend usuario:', usuario);
+          this.usuario = usuario;
+          this.usuarioEdit = { ...usuario };
+          if (!usuario.rol) {
+            this.usuario.rol = this.getRolFromId(usuario.idRol);
+          }
+          console.log('[Perfil] Usuario final en componente:', this.usuario);
+        },
+        error: err => {
+          console.error('[Perfil] Error obteniendo usuario del backend:', err);
+        }
+      });
+    } else {
+      console.warn('[Perfil] No se encontró usuario en localStorage.');
     }
-  ];
+    // Aquí puedes cargar resumenHistorial y registrosRecientes desde servicios reales si existen
+  }
 
-  constructor(private router: Router) {}
+  get fotoPerfil(): string {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent((this.usuario.nombre || '') + ' ' + (this.usuario.apPaterno || ''))}&background=2a7cc7&color=fff&size=128&rounded=true&bold=true`;
+  }
 
-  ngOnInit(): void {}
+  getRolFromId(idRol: number): { idRol: number, nombre: string } | undefined {
+    // Puedes reemplazar esto por una petición a un servicio de roles si lo deseas
+    const roles = [
+      { idRol: 1, nombre: 'Administrador' },
+      { idRol: 2, nombre: 'Médico' },
+      { idRol: 3, nombre: 'Paciente' }
+    ];
+    return roles.find(r => r.idRol === idRol);
+  }
 
   cambiarSeccion(seccion: string): void {
     this.seccionActual = seccion;
   }
 
   actualizarInformacion(): void {
-    console.log('Información actualizada:', this.usuario);
+    // Verificar si hubo cambios
+    const cambios = Object.keys(this.usuarioEdit).some(key => (this.usuario as any)[key] !== (this.usuarioEdit as any)[key]);
+    if (!cambios) {
+      Swal.fire('Sin cambios', 'No se han realizado cambios en la información.', 'info');
+      return;
+    }
+    Swal.fire({
+      title: '¿Guardar cambios?',
+      text: '¿Deseas actualizar tu información personal?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.usuarioService.actualizarUsuario(this.usuarioEdit).subscribe({
+          next: (ok) => {
+            if (ok) {
+              this.usuario = { ...this.usuarioEdit };
+              // Asegurar que el rol se mantenga después de guardar
+              if (!this.usuario.rol) {
+                this.usuario.rol = this.getRolFromId(this.usuario.idRol);
+              }
+              Swal.fire('¡Actualizado!', 'Tu información ha sido actualizada.', 'success');
+            } else {
+              Swal.fire('Error', 'No se pudo actualizar la información.', 'error');
+            }
+          },
+          error: () => {
+            Swal.fire('Error', 'Ocurrió un error al actualizar.', 'error');
+          }
+        });
+      }
+    });
   }
 
   cancelarEdicion(): void {
+    this.usuarioEdit = { ...this.usuario };
     console.log('Edición cancelada');
   }
 
