@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
+import { CitaService } from '../../services/cita.service';
 import { Usuario } from '../../models/usuario';
 import Swal from 'sweetalert2';
 
@@ -74,7 +75,7 @@ export class MiPerfilComponent implements OnInit {
 
   registrosRecientes: RegistroReciente[] = [];
 
-  constructor(private router: Router, private usuarioService: UsuarioService) {}
+  constructor(private router: Router, private usuarioService: UsuarioService, private citaService: CitaService) {}
 
   ngOnInit(): void {
     const userData = localStorage.getItem('usuario');
@@ -95,6 +96,20 @@ export class MiPerfilComponent implements OnInit {
         error: err => {
           console.error('[Perfil] Error obteniendo usuario del backend:', err);
         }
+      });
+
+      // Cargar citas completadas del usuario
+      this.citaService.getCitasPorPaciente(user.idUsuario).subscribe(citas => {
+        const completadas = citas.filter(c => c.estado === 'Completada');
+        this.resumenHistorial.totalCitas = completadas.length;
+        this.registrosRecientes = completadas
+          .sort((a, b) => new Date(b.fecha_hora).getTime() - new Date(a.fecha_hora).getTime())
+          .slice(0, 5)
+          .map(c => ({
+            id: c.idCita,
+            fecha: new Date(c.fecha_hora),
+            titulo: c.motivo || 'Cita médica'
+          }));
       });
     } else {
       console.warn('[Perfil] No se encontró usuario en localStorage.');
@@ -237,6 +252,10 @@ export class MiPerfilComponent implements OnInit {
 
   verDetalleRegistro(id: number): void {
     this.router.navigate(['/dashboard/historial'], { queryParams: { registro: id } });
+  }
+
+  verHistorialCompleto(): void {
+    this.router.navigate(['/dashboard/historial']);
   }
 
   calcularFortalezaPassword(): void {

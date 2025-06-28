@@ -136,16 +136,6 @@
               <p>{{ resumenHistorial.totalExamenes }}</p>
             </div>
           </div>
-          
-          <div class="resumen-card">
-            <div class="resumen-icon">
-              <i class="fas fa-user-md"></i>
-            </div>
-            <div class="resumen-info">
-              <h4>Especialistas Visitados</h4>
-              <p>{{ resumenHistorial.especialistasVisitados }}</p>
-            </div>
-          </div>
         </div>
         
         <div class="historial-reciente">
@@ -169,7 +159,7 @@
             </div>
           </div>
           
-          <button class="btn-ver-todo" routerLink="/dashboard/historial">
+          <button class="btn-ver-todo" (click)="verHistorialCompleto()">
             <i class="fas fa-file-medical-alt"></i> Ver historial completo
           </button>
         </div>

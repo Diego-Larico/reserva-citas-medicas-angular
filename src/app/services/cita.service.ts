@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Cita {
   idCita: number
@@ -34,6 +35,12 @@ export class CitaService {
 
   eliminarCita(cita: Cita): Observable<boolean> {
     return this.http.delete<boolean>(`${this.apiUrl}/EliminarCita`, { body: cita });
+  }
+
+  getCitasPorPaciente(idPaciente: number): Observable<Cita[]> {
+    return this.http.get<Cita[]>(`${this.apiUrl}/GetCita`).pipe(
+      map(citas => citas.filter(c => c.idPaciente === idPaciente))
+    );
   }
 
 }
