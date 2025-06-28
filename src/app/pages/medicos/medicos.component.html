@@ -1,0 +1,107 @@
+<p>medicos works!</p>
+<div class="medicos-container">
+  <div class="medicos-header">
+    <h2><i class="fas fa-user-md"></i> Nuestros Médicos</h2>
+    <p>Conoce a nuestro equipo de profesionales de la salud</p>
+  </div>
+
+  <div class="filtros-container">
+    <div class="filtro-group">
+      <label for="filtroEspecialidad"><i class="fas fa-filter"></i> Filtrar por especialidad:</label>
+      <select id="filtroEspecialidad" [(ngModel)]="filtroEspecialidad" (change)="aplicarFiltros()">
+        <option value="todas">Todas las especialidades</option>
+        <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+      </select>
+    </div>
+    
+    <div class="filtro-group">
+      <label for="filtroBusqueda"><i class="fas fa-search"></i> Buscar médico:</label>
+      <input type="text" id="filtroBusqueda" [(ngModel)]="filtroBusqueda" 
+             (input)="aplicarFiltros()" placeholder="Nombre o apellido">
+    </div>
+  </div>
+
+  <div class="medicos-grid">
+    <div *ngIf="medicosFiltrados.length === 0" class="no-resultados">
+      <i class="fas fa-user-md"></i>
+      <p>No se encontraron médicos con los criterios seleccionados</p>
+    </div>
+
+    <div *ngFor="let medico of medicosFiltrados" class="medico-card">
+      <div class="medico-imagen">
+        <img [src]="medico.fotoPerfil" alt="Foto del Dr. {{ medico.nombre }}">
+      </div>
+      
+      <div class="medico-info">
+        <h3>Dr. {{ medico.nombre }} {{ medico.apPaterno }}</h3>
+        <p class="especialidad"><i class="fas fa-stethoscope"></i> {{ medico.especialidad?.nombre }}</p>
+        
+        <div class="medico-detalle">
+          <p><i class="fas fa-graduation-cap"></i> <strong>Formación:</strong> {{ medico.formacion || 'Universidad Nacional de Medicina' }}</p>
+          <p><i class="fas fa-star"></i> <strong>Especialización:</strong> {{ medico.especializacion || 'Especialista certificado' }}</p>
+          <p><i class="fas fa-calendar-alt"></i> <strong>Experiencia:</strong> {{ medico.experiencia || '10+ años' }} de experiencia</p>
+        </div>
+        
+        <div class="medico-horarios">
+          <h4><i class="fas fa-clock"></i> Horarios de atención:</h4>
+          <ul>
+            <li *ngFor="let horario of medico.horarios">{{ horario }}</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="medico-acciones">
+        <button class="btn-agendar" (click)="agendarConMedico(medico.idUsuario)">
+          <i class="fas fa-calendar-plus"></i> Agendar cita
+        </button>
+        <button class="btn-detalle" (click)="verDetalleMedico(medico.idUsuario)">
+          <i class="fas fa-info-circle"></i> Ver perfil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalle del médico -->
+  <div *ngIf="medicoSeleccionado" class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="btn-cerrar-modal" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="modal-header">
+        <div class="medico-modal-imagen">
+          <img [src]="medicoSeleccionado.fotoPerfil" alt="Foto del Dr. {{ medicoSeleccionado.nombre }}">
+        </div>
+        <div class="medico-modal-titulo">
+          <h3>Dr. {{ medicoSeleccionado.nombre }} {{ medicoSeleccionado.apPaterno }}</h3>
+          <p class="especialidad-modal">{{ medicoSeleccionado.especialidad?.nombre }}</p>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-section">
+          <h4><i class="fas fa-graduation-cap"></i> Formación Académica</h4>
+          <p>{{ medicoSeleccionado.formacionCompleta || 'Médico Cirujano por la Universidad Nacional de Medicina. Especialidad en ' + medicoSeleccionado.especialidad?.nombre + ' por el Colegio Médico de Especialistas.' }}</p>
+        </div>
+        
+        <div class="modal-section">
+          <h4><i class="fas fa-briefcase-medical"></i> Experiencia Profesional</h4>
+          <p>{{ medicoSeleccionado.experienciaCompleta || 'Más de ' + (medicoSeleccionado.experiencia || '10') + ' años de experiencia atendiendo pacientes. Trabajó en el Hospital Central antes de unirse a nuestro equipo.' }}</p>
+        </div>
+        
+        <div class="modal-section">
+          <h4><i class="fas fa-clock"></i> Horarios de Atención</h4>
+          <ul class="horarios-list">
+            <li *ngFor="let horario of medicoSeleccionado.horarios">{{ horario }}</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-agendar-modal" (click)="agendarConMedico(medicoSeleccionado.idUsuario)">
+          <i class="fas fa-calendar-plus"></i> Agendar cita con este médico
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
