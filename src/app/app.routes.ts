@@ -5,6 +5,7 @@ import { MisCitasComponent } from './pages/mis-citas/mis-citas.component';
 import { NuevaCitaComponent } from './pages/nueva-cita/nueva-cita.component';
 import { MedicosComponent } from './pages/medicos/medicos.component';
 import { HitorialComponent } from './pages/hitorial/hitorial.component';
+import { MiPerfilComponent } from './pages/mi-perfil/mi-perfil.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
       { path: 'nueva-cita', component: NuevaCitaComponent },
       { path: 'medicos', component: MedicosComponent },
       { path: 'historial', component: HitorialComponent },
+      { path: 'perfil', component: MiPerfilComponent },
       { path: '', redirectTo: 'citas', pathMatch: 'full' }
     ]
   }
