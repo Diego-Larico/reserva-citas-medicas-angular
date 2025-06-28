@@ -162,11 +162,63 @@ export class MiPerfilComponent implements OnInit {
     console.log('Edición cancelada');
   }
 
+  formularioPasswordValido(): boolean {
+    // El botón se activa si los 3 campos tienen valor
+    return (
+      this.passwordActual.length > 0 &&
+      this.nuevoPassword.length > 0 &&
+      this.confirmarPassword.length > 0
+    );
+  }
+
   actualizarPassword(): void {
-    console.log('Contraseña actualizada');
-    this.passwordActual = '';
-    this.nuevoPassword = '';
-    this.confirmarPassword = '';
+    // Validaciones completas antes de enviar
+    if (!this.passwordActual || !this.nuevoPassword || !this.confirmarPassword) {
+      Swal.fire('Campos incompletos', 'Por favor, completa todos los campos.', 'warning');
+      return;
+    }
+    if (this.nuevoPassword.length < 8) {
+      Swal.fire('Contraseña débil', 'La nueva contraseña debe tener al menos 8 caracteres.', 'warning');
+      return;
+    }
+    if (this.nuevoPassword !== this.confirmarPassword) {
+      Swal.fire('No coinciden', 'La nueva contraseña y la confirmación no coinciden.', 'error');
+      return;
+    }
+    if (this.passwordActual === this.nuevoPassword) {
+      Swal.fire('Sin cambios', 'La nueva contraseña no puede ser igual a la actual.', 'info');
+      return;
+    }
+    // Validar contraseña actual con backend
+    this.usuarioService.getUsuarioPorId(this.usuario.idUsuario).subscribe({
+      next: (usuario) => {
+        if (usuario.password !== this.passwordActual) {
+          Swal.fire('Contraseña incorrecta', 'La contraseña actual no es correcta.', 'error');
+          return;
+        }
+        // Actualizar contraseña en backend
+        const usuarioActualizado = { ...usuario, password: this.nuevoPassword };
+        this.usuarioService.actualizarUsuario(usuarioActualizado).subscribe({
+          next: (ok) => {
+            if (ok) {
+              this.usuario.password = this.nuevoPassword;
+              this.passwordActual = '';
+              this.nuevoPassword = '';
+              this.confirmarPassword = '';
+              Swal.fire('¡Contraseña actualizada!', 'Tu contraseña ha sido cambiada exitosamente.', 'success');
+            } else {
+              Swal.fire('Error', 'No se pudo actualizar la contraseña.', 'error');
+            }
+          },
+          error: () => {
+            Swal.fire('Error', 'Ocurrió un error al actualizar la contraseña.', 'error');
+          }
+        });
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo validar la contraseña actual.', 'error');
+      }
+    });
   }
 
   cancelarCambioPassword(): void {
@@ -185,12 +237,6 @@ export class MiPerfilComponent implements OnInit {
 
   verDetalleRegistro(id: number): void {
     this.router.navigate(['/dashboard/historial'], { queryParams: { registro: id } });
-  }
-
-  formularioPasswordValido(): boolean {
-    return this.passwordActual.length > 0 && 
-           this.nuevoPassword.length >= 8 && 
-           this.nuevoPassword === this.confirmarPassword;
   }
 
   calcularFortalezaPassword(): void {

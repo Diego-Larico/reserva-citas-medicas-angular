@@ -215,27 +215,47 @@
   
   .password-strength {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
     align-items: center;
-    
-    span {
-      flex: 1;
-      height: 4px;
-      background: #ddd;
-      border-radius: 2px;
-      transition: all 0.3s;
-      
-      &.active {
-        background: #28a745;
-      }
-    }
-    
-    p {
-      font-size: 0.8rem;
-      color: #666;
-      margin-left: 0.5rem;
-    }
+    gap: 4px;
+    margin-top: 4px;
+    min-height: 22px; /* Asegura espacio para el texto siempre */
+  }
+  
+  .password-strength span {
+    display: inline-block;
+    width: 28px;
+    height: 8px;
+    border-radius: 4px;
+    background: #e0e0e0;
+    transition: background 0.3s;
+  }
+  
+  .password-strength span.active:nth-child(1) {
+    background: #e74c3c; /* rojo: débil */
+  }
+  
+  .password-strength span.active:nth-child(2) {
+    background: #f1c40f; /* amarillo: moderada */
+  }
+  
+  .password-strength span.active:nth-child(3) {
+    background: #27ae60; /* verde: fuerte */
+  }
+  
+  .password-strength span.active:nth-child(4) {
+    background: #2a7cc7; /* azul: muy fuerte */
+  }
+  
+  .password-strength p {
+    margin: 0 0 0 10px;
+    font-size: 0.95em;
+    color: #555;
+    min-width: 70px; /* Reserva espacio para el texto */
+    visibility: hidden;
+  }
+  
+  .password-strength p:not(:empty) {
+    visibility: visible;
   }
   
   .opciones-notificaciones {
