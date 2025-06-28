@@ -1,0 +1,333 @@
+.historial-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  color: #333;
+}
+
+.historial-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  
+  h2 {
+    font-size: 2.2rem;
+    color: #1a5a9e;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: #555;
+  }
+}
+
+.filtros-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  border: 1px solid #e1e8f0;
+}
+
+.filtro-group {
+  flex: 1;
+  min-width: 200px;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d1e3f8;
+    border-radius: 8px;
+    background: white;
+    font-size: 1rem;
+    transition: all 0.3s;
+    
+    &:focus {
+      outline: none;
+      border-color: #2a7cc7;
+      box-shadow: 0 0 0 3px rgba(42, 124, 199, 0.1);
+    }
+  }
+}
+
+.historial-timeline {
+  position: relative;
+  padding: 2rem 0;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50px;
+    width: 2px;
+    background: #d1e3f8;
+    z-index: 1;
+  }
+}
+
+.no-registros {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  
+  i {
+    font-size: 3rem;
+    color: #2a7cc7;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+  
+  p {
+    color: #555;
+    font-size: 1.1rem;
+  }
+}
+
+.registro-item {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  z-index: 2;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &:before {
+    content: '';
+    position: absolute;
+    left: 46px;
+    top: 30px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #2a7cc7;
+    z-index: 3;
+  }
+}
+
+.registro-fecha {
+  width: 100px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 4;
+  
+  .fecha-dia {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1a5a9e;
+    line-height: 1;
+  }
+  
+  .fecha-mes {
+    font-size: 0.9rem;
+    color: #2a7cc7;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0.3rem 0;
+  }
+  
+  .fecha-anio {
+    font-size: 1rem;
+    color: #666;
+  }
+}
+
+.registro-content {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.registro-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f4f9;
+  
+  h3 {
+    color: #1a5a9e;
+    font-size: 1.3rem;
+    margin-right: auto;
+  }
+}
+
+.registro-tipo {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tipo-consulta .registro-tipo {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.tipo-procedimiento .registro-tipo {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.tipo-examen .registro-tipo {
+  background: #fff8e6;
+  color: #e6a700;
+}
+
+.registro-especialidad {
+  font-size: 0.9rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  
+  i {
+    color: #2a7cc7;
+  }
+}
+
+.registro-detalle {
+  p {
+    margin-bottom: 0.8rem;
+    color: #555;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    
+    i {
+      color: #2a7cc7;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+.registro-archivos {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f4f9;
+  
+  h4 {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.archivos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.archivo-item {
+  padding: 0.5rem 1rem;
+  background: #f5f9ff;
+  border-radius: 6px;
+  color: #2a7cc7;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  border: 1px solid #d1e3f8;
+  
+  &:hover {
+    background: #e1ecf8;
+  }
+  
+  i {
+    color: #d32f2f;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .historial-timeline:before {
+    left: 30px;
+  }
+  
+  .registro-item {
+    flex-direction: column;
+    gap: 1rem;
+    
+    &:before {
+      left: 26px;
+      top: 50px;
+    }
+  }
+  
+  .registro-fecha {
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    
+    .fecha-dia, .fecha-mes, .fecha-anio {
+      display: inline-block;
+    }
+    
+    .fecha-dia {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .filtros-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .registro-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .registro-tipo, .registro-especialidad {
+    align-self: flex-start;
+  }
+}

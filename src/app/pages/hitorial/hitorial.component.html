@@ -1,0 +1,78 @@
+<div class="historial-container">
+  <div class="historial-header">
+    <h2><i class="fas fa-file-medical"></i> Mi Historial Médico</h2>
+    <p>Registro completo de tus consultas y procedimientos</p>
+  </div>
+
+  <div class="filtros-container">
+    <div class="filtro-group">
+      <label for="filtroAnio"><i class="fas fa-filter"></i> Filtrar por año:</label>
+      <select id="filtroAnio" [(ngModel)]="filtroAnio" (change)="aplicarFiltros()">
+        <option value="todos">Todos los años</option>
+        <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+      </select>
+    </div>
+    
+    <div class="filtro-group">
+      <label for="filtroEspecialidad"><i class="fas fa-stethoscope"></i> Especialidad:</label>
+      <select id="filtroEspecialidad" [(ngModel)]="filtroEspecialidad" (change)="aplicarFiltros()">
+        <option value="todas">Todas las especialidades</option>
+        <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+      </select>
+    </div>
+    
+    <div class="filtro-group">
+      <label for="filtroTipo"><i class="fas fa-tag"></i> Tipo de registro:</label>
+      <select id="filtroTipo" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
+        <option value="todos">Todos los tipos</option>
+        <option value="consulta">Consultas</option>
+        <option value="procedimiento">Procedimientos</option>
+        <option value="examen">Exámenes</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="historial-timeline">
+    <div *ngIf="registrosFiltrados.length === 0" class="no-registros">
+      <i class="fas fa-file-medical-alt"></i>
+      <p>No se encontraron registros médicos</p>
+    </div>
+
+    <div *ngFor="let registro of registrosFiltrados" class="registro-item" [ngClass]="{'tipo-consulta': registro.tipo === 'consulta', 'tipo-procedimiento': registro.tipo === 'procedimiento', 'tipo-examen': registro.tipo === 'examen'}">
+      <div class="registro-fecha">
+        <div class="fecha-dia">{{ registro.fecha | date:'dd' }}</div>
+        <div class="fecha-mes">{{ registro.fecha | date:'MMM' | uppercase }}</div>
+        <div class="fecha-anio">{{ registro.fecha | date:'yyyy' }}</div>
+      </div>
+      
+      <div class="registro-content">
+        <div class="registro-header">
+          <h3>{{ registro.titulo }}</h3>
+          <span class="registro-tipo">{{ getTipoDisplay(registro.tipo) }}</span>
+          <span class="registro-especialidad" *ngIf="registro.especialidad">
+            <i class="fas fa-stethoscope"></i> {{ registro.especialidad.nombre }}
+          </span>
+        </div>
+        
+        <div class="registro-detalle">
+          <p *ngIf="registro.medico"><i class="fas fa-user-md"></i> <strong>Médico:</strong> Dr. {{ registro.medico.nombre }} {{ registro.medico.apPaterno }}</p>
+          <p *ngIf="registro.diagnostico"><i class="fas fa-diagnoses"></i> <strong>Diagnóstico:</strong> {{ registro.diagnostico }}</p>
+          <p *ngIf="registro.tratamiento"><i class="fas fa-prescription-bottle-alt"></i> <strong>Tratamiento:</strong> {{ registro.tratamiento }}</p>
+          <p *ngIf="registro.notas"><i class="fas fa-notes-medical"></i> <strong>Notas:</strong> {{ registro.notas }}</p>
+          
+          <div *ngIf="registro.archivos && registro.archivos.length" class="registro-archivos">
+            <h4><i class="fas fa-paperclip"></i> Archivos adjuntos:</h4>
+            <div class="archivos-list">
+              <a *ngFor="let archivo of registro.archivos" href="#" class="archivo-item">
+                <i class="fas fa-file-pdf" *ngIf="archivo.tipo === 'pdf'"></i>
+                <i class="fas fa-file-image" *ngIf="archivo.tipo === 'imagen'"></i>
+                <i class="fas fa-file-alt" *ngIf="archivo.tipo === 'documento'"></i>
+                {{ archivo.nombre }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
