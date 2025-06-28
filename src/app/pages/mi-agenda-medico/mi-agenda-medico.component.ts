@@ -34,9 +34,12 @@ export class MiAgendaMedicoComponent implements OnInit {
     iCita: 0,
     idMedico: 0,
     diagnosticoPrincipal: '',
+    codigoCIE10: '',
     notasMedicas: ''
   };
   tratamientosTemporales: any[] = [];
+
+  filtrandoPorFecha: boolean = false;
 
   constructor(
     private citaService: CitaService,
@@ -51,7 +54,7 @@ export class MiAgendaMedicoComponent implements OnInit {
 
   getUsuarioActual(): Usuario | null {
     // Se asume que el usuario autenticado está en localStorage bajo 'user' (ajusta si tu app lo guarda diferente)
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('usuario');
     if (userStr) {
       try {
         return JSON.parse(userStr);
@@ -65,10 +68,12 @@ export class MiAgendaMedicoComponent implements OnInit {
   cargarCitas(): void {
     if (!this.usuario) return;
     this.citaService.getCitas().subscribe(async (citas) => {
-      const citasFiltradas = citas.filter(c =>
-        c.idMedico === this.usuario!.idUsuario &&
-        new Date(c.fecha_hora).toDateString() === this.fechaActual.toDateString()
-      );
+      // Filtrar solo por médico
+      let citasFiltradas = citas.filter(c => c.idMedico === this.usuario!.idUsuario);
+      // Si está activado el filtro por fecha, filtrar también por la fecha seleccionada
+      if (this.filtrandoPorFecha) {
+        citasFiltradas = citasFiltradas.filter(c => new Date(c.fecha_hora).toDateString() === this.fechaActual.toDateString());
+      }
       this.citas = await Promise.all(citasFiltradas.map(async (cita) => {
         let paciente = await this.usuarioService.getUsuarioPorId(cita.idPaciente).toPromise();
         // Si por alguna razón no se encuentra el paciente, crea uno vacío con datos estáticos
@@ -83,7 +88,7 @@ export class MiAgendaMedicoComponent implements OnInit {
             password: '',
             idRol: 0,
             idEspecialidad: 0,
-            telefono: '555-000-0000',
+            telefono: 'No registrado',
             fechaNacimiento: '1990-01-01',
             genero: 'No especificado',
             antecedentes: 'Sin antecedentes registrados'
@@ -91,7 +96,7 @@ export class MiAgendaMedicoComponent implements OnInit {
         } else {
           paciente = {
             ...paciente,
-            telefono: (paciente as any).telefono || '555-000-0000',
+            telefono: (paciente as any).telefono || 'No registrado',
             fechaNacimiento: (paciente as any).fechaNacimiento || '1990-01-01',
             genero: (paciente as any).genero || 'No especificado',
             antecedentes: (paciente as any).antecedentes || 'Sin antecedentes registrados'
@@ -117,7 +122,9 @@ export class MiAgendaMedicoComponent implements OnInit {
     const nuevaFecha = new Date(this.fechaActual);
     nuevaFecha.setDate(nuevaFecha.getDate() + dias);
     this.fechaActual = nuevaFecha;
-    this.cargarCitas();
+    if (this.filtrandoPorFecha) {
+      this.cargarCitas();
+    }
   }
 
   calcularResumenDia(): void {
@@ -157,6 +164,7 @@ export class MiAgendaMedicoComponent implements OnInit {
       iCita: cita.idCita,
       idMedico: this.usuario?.idUsuario,
       diagnosticoPrincipal: (cita as any).historial?.diagnosticoPrincipal || '',
+      codigoCIE10: (cita as any).historial?.codigoCIE10 || '',
       notasMedicas: (cita as any).historial?.notasMedicas || ''
     };
     this.tratamientosTemporales = [];
@@ -202,11 +210,11 @@ export class MiAgendaMedicoComponent implements OnInit {
 
   guardarAtencion(): void {
     if (this.citaEnAtencion) {
-      // Aquí deberías guardar el historial clínico y tratamientos usando un servicio real
       this.citaEnAtencion.estado = 'Completada';
       (this.citaEnAtencion as any).historial = {
         idHistorial: Math.floor(Math.random() * 1000) + 1, // Simulado
         diagnosticoPrincipal: this.historialTemporal.diagnosticoPrincipal,
+        codigoCIE10: this.historialTemporal.codigoCIE10,
         notasMedicas: this.historialTemporal.notasMedicas
       };
       this.citaService.actualizarCita(this.citaEnAtencion).subscribe(() => {
@@ -228,8 +236,26 @@ export class MiAgendaMedicoComponent implements OnInit {
       iCita: 0,
       idMedico: 0,
       diagnosticoPrincipal: '',
+      codigoCIE10: '',
       notasMedicas: ''
     };
     this.tratamientosTemporales = [];
+  }
+
+  toggleFiltrarPorFecha(): void {
+    this.filtrandoPorFecha = !this.filtrandoPorFecha;
+    this.cargarCitas();
+  }
+
+  resetFiltros(): void {
+    this.filtroEstado = 'todas';
+    this.filtroPaciente = '';
+    this.cargarCitas();
+  }
+
+  getFechaActualFormateada(): string {
+    return this.fechaActual.toLocaleDateString('es-ES', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
   }
 }

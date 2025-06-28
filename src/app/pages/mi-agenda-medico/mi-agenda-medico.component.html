@@ -1,10 +1,16 @@
 <div class="agenda-container">
   <div class="agenda-header">
     <h2><i class="fas fa-calendar-alt me-2"></i> Mi Agenda</h2>
-    <div class="fecha-control">
-      <button (click)="cambiarFecha(-1)"><i class="fas fa-chevron-left"></i></button>
-      <h3>{{ fechaActual | date:'EEEE, d MMMM y' }}</h3>
-      <button (click)="cambiarFecha(1)"><i class="fas fa-chevron-right"></i></button>
+    <div class="agenda-header-controls">
+      <div class="fecha-control">
+        <button (click)="cambiarFecha(-1)"><i class="fas fa-chevron-left"></i></button>
+        <h3>{{ getFechaActualFormateada() }}</h3>
+        <button (click)="cambiarFecha(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <button class="btn-refresh" [ngClass]="{ 'filtrando': filtrandoPorFecha }" (click)="toggleFiltrarPorFecha()">
+        <i class="fas" [ngClass]="filtrandoPorFecha ? 'fa-filter' : 'fa-calendar'" style="margin-right:0.5rem;"></i>
+        {{ filtrandoPorFecha ? 'Filtrando' : 'Filtrar por fecha' }}
+      </button>
     </div>
   </div>
 
@@ -27,8 +33,8 @@
     </div>
     
     <div class="filtro-group">
-      <button class="btn-refresh" (click)="cargarCitas()">
-        <i class="fas fa-sync-alt"></i> Actualizar
+      <button class="btn-refresh" (click)="resetFiltros()">
+        <i class="fas fa-eraser"></i> Limpiar filtros
       </button>
     </div>
   </div>
@@ -137,7 +143,6 @@
       
       <div class="modal-header">
         <h3>Atención Médica</h3>
-        <p>Dr. {{ usuario?.nombre }} {{ usuario?.apPaterno }} atendiendo a {{ citaEnAtencion.paciente?.nombre }} {{ citaEnAtencion.paciente?.apPaterno }}</p>
       </div>
       
       <div class="modal-body">
@@ -162,12 +167,16 @@
         <div class="atencion-form">
           <h4><i class="fas fa-stethoscope"></i> Diagnóstico y Tratamiento</h4>
           
-          <div class="form-group">
-            <label for="diagnostico">Diagnóstico Principal (CIE-10)</label>
-            <div class="input-with-button">
+          <div class="form-row">
+            <div class="form-group" style="flex:2; min-width:180px;">
+              <label for="diagnostico">Diagnóstico Principal</label>
               <input type="text" id="diagnostico" [(ngModel)]="historialTemporal.diagnosticoPrincipal" 
-                     placeholder="Ej: J06.9 - Infección aguda de las vías respiratorias superiores">
-              <button class="btn-buscar-cie"><i class="fas fa-search"></i> Buscar CIE-10</button>
+                     placeholder="Ej: Infección aguda de las vías respiratorias superiores">
+            </div>
+            <div class="form-group" style="flex:1; min-width:100px; max-width:160px; margin-left:1rem;">
+              <label for="cie10">Código CIE-10</label>
+              <input type="text" id="cie10" [(ngModel)]="historialTemporal.codigoCIE10" 
+                     placeholder="Ej: J06.9">
             </div>
           </div>
           

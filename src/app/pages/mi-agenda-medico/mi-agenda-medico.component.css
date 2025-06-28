@@ -22,6 +22,13 @@
   }
 }
 
+.agenda-header-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
 .fecha-control {
   display: flex;
   align-items: center;
@@ -30,6 +37,7 @@
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 0;
   
   h3 {
     margin: 0;
@@ -112,12 +120,31 @@
   align-items: center;
   gap: 0.8rem;
   margin-top: 1.8rem;
-  
+  min-width: 180px;
+  margin-bottom: 1.5rem;
   &:hover {
     opacity: 0.9;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(42, 124, 199, 0.2);
   }
+  
+}
+
+.btn-refresh.filtrando {
+  background: linear-gradient(135deg, #218838, #145c1b);
+  color: #fff;
+  min-width: 180px;
+}
+
+.btn-refresh.filtrando:hover {
+  box-shadow: 0 4px 12px rgba(33, 136, 56, 0.2);
+  opacity: 0.95;
+  min-width: 180px;
+}
+
+.btn-refresh, .btn-refresh.filtrando {
+  min-width: 180px;
+  justify-content: center;
 }
 
 .agenda-content {
