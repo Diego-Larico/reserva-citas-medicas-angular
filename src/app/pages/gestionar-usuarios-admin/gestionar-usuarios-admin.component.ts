@@ -207,4 +207,11 @@ export class GestionarUsuariosAdminComponent implements OnInit {
       this.usuarioForm.get('idEspecialidad')?.setValue(null);
     }
   }
+
+  limpiarFiltros(): void {
+    this.filtroBusqueda = '';
+    this.filtroRol = 'todos';
+    this.filtroEstado = 'todos';
+    this.aplicarFiltros();
+  }
 }
