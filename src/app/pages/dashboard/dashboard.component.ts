@@ -39,4 +39,17 @@ export class DashboardComponent {
     localStorage.removeItem('usuario');
     this.router.navigate(['/']);
   }
+
+  irVistaInicial(event?: Event) {
+    if (event) event.preventDefault();
+    if (this.userRol === 'paciente') {
+      this.router.navigate(['/dashboard/citas']);
+    } else if (this.userRol === 'medico') {
+      this.router.navigate(['/dashboard/agenda']);
+    } else if (this.userRol === 'admin') {
+      this.router.navigate(['/dashboard/gestionar-usuarios']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+  }
 }

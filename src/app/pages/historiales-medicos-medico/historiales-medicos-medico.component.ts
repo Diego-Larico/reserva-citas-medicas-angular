@@ -150,6 +150,12 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
     });
   }
 
+  limpiarFiltros(): void {
+    this.filtroBusqueda = '';
+    this.filtroFecha = 'todos';
+    this.aplicarFiltros();
+  }
+
   verDetalleHistorial(idHistorial: number): void {
     // Simulación: buscar historial en la lista
     this.historialSeleccionado = this.historiales.find(h => h.idHistorial === idHistorial);

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark medical-navbar">
   <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/dashboard">
+    <a class="navbar-brand" href="#" (click)="irVistaInicial($event)">
       <i class="fas fa-hospital me-2"></i>
       <span>Sistema de Reserva</span>
     </a>
@@ -53,8 +53,8 @@
 
         <!-- Menú para Administradores -->
         <li class="nav-item" *ngIf="userRol === 'admin'">
-          <a class="nav-link" routerLink="/dashboard/usuarios" routerLinkActive="active">
-            <i class="fas fa-user-cog me-1"></i> Usuarios
+          <a class="nav-link" routerLink="/dashboard/gestionar-usuarios" routerLinkActive="active">
+            <i class="fas fa-user-cog me-1"></i> Gestionar Usuarios
           </a>
         </li>
         <li class="nav-item" *ngIf="userRol === 'admin'">

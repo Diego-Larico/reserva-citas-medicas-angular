@@ -17,9 +17,9 @@
           <option value="anio">Este año</option>
         </select>
       </div>
-      <button class="btn-refresh" (click)="cargarHistoriales()">
-        <i class="fas" [ngClass]="{'fa-spinner fa-spin': cargando, 'fa-sync-alt': !cargando}"></i> 
-        {{ cargando ? 'Cargando...' : 'Actualizar' }}
+      <button class="btn-refresh" (click)="limpiarFiltros()">
+        <i class="fas fa-eraser"></i> 
+        Limpiar Filtros
       </button>
     </div>
   </div>
@@ -83,7 +83,7 @@
                 <p><i class="fas fa-birthday-cake"></i> fecha no registrada</p>
               </ng-container>
               <ng-template #mostrarEdad>
-                <p><i class="fas fa-birthday-cake"></i> {{ calcularEdad(historial.paciente?.fechaNacimiento) }} años</p>
+                <p><i class="fas fa-birthday-cake"></i> {{ calcularEdad(historial.paciente?.fechaNacimiento) }} </p>
               </ng-template>
             </ng-container>
             <p *ngIf="!historial.paciente" class="text-muted">Cargando paciente...</p>
@@ -118,7 +118,7 @@
           <i class="fas fa-eye"></i> Ver Detalle Completo
         </button>
         <button class="btn-descargar" (click)="imprimirHistorial(historial.idHistorial)">
-          <i class="fas fa-download"></i> Imprimir
+          <i class="fas fa-print"></i> Imprimir
         </button>
       </div>
     </div>
@@ -145,7 +145,7 @@
           </div>
           <div>
             <h4>{{ historialSeleccionado.paciente?.nombre }} {{ historialSeleccionado.paciente?.apPaterno }} {{ historialSeleccionado.paciente?.apMaterno }}</h4>
-            <p *ngIf="historialSeleccionado.paciente"><i class="fas fa-birthday-cake"></i> {{ historialSeleccionado.paciente?.fechaNacimiento | date:'dd/MM/yyyy' }} ({{ calcularEdad(historialSeleccionado.paciente?.fechaNacimiento) }} años)</p>
+            <p *ngIf="historialSeleccionado.paciente"><i class="fas fa-birthday-cake"></i> {{ historialSeleccionado.paciente?.fechaNacimiento | date:'dd/MM/yyyy' }} ({{ calcularEdad(historialSeleccionado.paciente?.fechaNacimiento) }})</p>
             <p *ngIf="historialSeleccionado.paciente"><i class="fas fa-venus-mars"></i> {{ historialSeleccionado.paciente?.genero || 'No especificado' }}</p>
             <p *ngIf="historialSeleccionado.paciente"><i class="fas fa-id-card"></i> {{ historialSeleccionado.paciente?.dni || 'Sin DNI' }}</p>
             <p *ngIf="!historialSeleccionado.paciente" class="text-muted">Cargando paciente...</p>
@@ -210,7 +210,7 @@
     <div class="modal-acciones">
       <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
       <button class="btn-descargar-modal" (click)="imprimirHistorial(historialSeleccionado.idHistorial)">
-        <i class="fas fa-download"></i> Imprimir
+        <i class="fas fa-print"></i> Imprimir
       </button>
     </div>
   </div>
