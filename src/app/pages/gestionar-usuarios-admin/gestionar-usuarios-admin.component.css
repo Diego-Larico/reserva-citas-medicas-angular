@@ -233,8 +233,8 @@
 }
 
 .badge-admin {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #ff9800;
+  color: #fff;
 }
 
 .badge-medico {
@@ -442,7 +442,6 @@
   border-radius: 20px;
   background: #e1ecf8;
   position: relative;
-  -webkit-appearance: none;
   cursor: pointer;
 }
 

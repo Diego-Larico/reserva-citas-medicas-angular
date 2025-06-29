@@ -43,7 +43,7 @@
     <div *ngFor="let usuario of usuariosFiltrados" class="usuario-card">
       <div class="usuario-header">
         <div class="usuario-avatar">
-          <img [src]="'https://ui-avatars.com/api/?name=' + (usuario.nombre || 'Usuario') + '&background=0D8ABC&color=fff'" alt="{{ usuario.nombre }}">
+          <img [src]="'https://ui-avatars.com/api/?name=' + (usuario.nombre || '') + '+' + (usuario.apPaterno || '') + '&background=0D8ABC&color=fff'" alt="{{ usuario.nombre }} {{ usuario.apPaterno }}">
         </div>
         <div class="usuario-info">
           <h3>{{ usuario.nombre }} {{ usuario.apPaterno }} {{ usuario.apMaterno }}</h3>
@@ -53,25 +53,21 @@
         <div class="usuario-estado">
           <span class="badge" [ngClass]="{
             'badge-activo': usuario.activo,
-            'badge-inactivo': !usuario.activo,
+            'badge-inactivo': !usuario.activo
+          }">
+            {{ usuario.estado_descripcion || (usuario.activo ? 'Activo' : 'Inactivo') }}
+          </span>
+          <span class="badge" [ngClass]="{
             'badge-admin': usuario.idRol === 1,
             'badge-medico': usuario.idRol === 2,
             'badge-paciente': usuario.idRol === 3
           }">
-            {{ usuario.estado_descripcion || (usuario.activo ? 'Activo' : 'Inactivo') }}
+            {{ getRolNombre(usuario.idRol) | titlecase }}
           </span>
-          <span *ngIf="usuario.idEspecialidad" class="badge badge-especialidad">
+          <span *ngIf="usuario.idEspecialidad && usuario.idRol !== 3 && usuario.idRol !== 1" class="badge badge-especialidad">
             {{ getEspecialidadNombre(usuario.idEspecialidad) }}
           </span>
         </div>
-      </div>
-      <div class="usuario-detalle">
-        <p><strong>Email:</strong> {{ usuario.email }}</p>
-        <p><strong>Usuario:</strong> {{ usuario.usuario }}</p>
-        <p><strong>Rol:</strong> {{ getRolNombre(usuario.idRol) | titlecase }}</p>
-        <p *ngIf="usuario.idEspecialidad"><strong>Especialidad:</strong> {{ getEspecialidadNombre(usuario.idEspecialidad) }}</p>
-        <p><strong>Fecha de registro:</strong> (estático)</p>
-        <p><strong>Último acceso:</strong> (estático)</p>
       </div>
       <div class="usuario-acciones">
         <button class="btn-editar" (click)="editarUsuario(usuario)"><i class="fas fa-edit"></i> Editar</button>

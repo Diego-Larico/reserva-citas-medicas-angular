@@ -84,10 +84,24 @@ export class GestionarUsuariosAdminComponent implements OnInit {
         (usuario.nombre + ' ' + usuario.apPaterno + ' ' + usuario.apMaterno).toLowerCase().includes(textoBusqueda) ||
         usuario.email.toLowerCase().includes(textoBusqueda) ||
         usuario.usuario.toLowerCase().includes(textoBusqueda);
-      const coincideRol = this.filtroRol === 'todos' || usuario.idRol === Number(this.filtroRol);
-      const coincideEstado = this.filtroEstado === 'todos' ||
-        (this.filtroEstado === 'activo' && usuario.activo) ||
-        (this.filtroEstado === 'inactivo' && !usuario.activo);
+
+      // Mapear filtroRol a idRol numérico
+      let coincideRol = true;
+      if (this.filtroRol !== 'todos') {
+        let idRolFiltro = 0;
+        if (this.filtroRol === 'admin') idRolFiltro = 1;
+        else if (this.filtroRol === 'medico') idRolFiltro = 2;
+        else if (this.filtroRol === 'paciente') idRolFiltro = 3;
+        coincideRol = usuario.idRol === idRolFiltro;
+      }
+
+      // Mapear filtroEstado a booleano
+      let coincideEstado = true;
+      if (this.filtroEstado !== 'todos') {
+        if (this.filtroEstado === 'activo') coincideEstado = !!usuario.activo;
+        else if (this.filtroEstado === 'inactivo') coincideEstado = !usuario.activo;
+      }
+
       return coincideBusqueda && coincideRol && coincideEstado;
     });
   }
