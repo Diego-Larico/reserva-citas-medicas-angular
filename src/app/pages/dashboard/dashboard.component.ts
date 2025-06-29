@@ -30,7 +30,7 @@ export class DashboardComponent {
       } else if (this.userRol === 'paciente') {
         this.router.navigate(['/dashboard/citas']);
       } else if (this.userRol === 'admin') {
-        this.router.navigate(['/dashboard/usuarios']);
+        this.router.navigate(['/dashboard/gestionar-usuarios']); // <-- Corregido
       }
     }
   }

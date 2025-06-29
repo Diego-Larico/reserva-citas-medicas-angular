@@ -9,6 +9,7 @@ export interface Usuario {
     idRol: number;
     idEspecialidad: number;
     rol?: { idRol: number; nombre: string };
+    activo?: boolean; // <-- Agregado para gestión de estado en frontend
     // Campos extra para frontend (no existen en la BD, se rellenan con datos estáticos)
     telefono?: string;
     fechaNacimiento?: string;
