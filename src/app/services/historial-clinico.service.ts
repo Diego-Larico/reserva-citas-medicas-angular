@@ -20,7 +20,8 @@ export class HistorialClinicoService {
   constructor(private http: HttpClient) {}
 
   crearHistorial(historial: HistorialClinico): Observable<HistorialClinico> {
-    return this.http.post<HistorialClinico>(this.apiUrl, historial);
+    // Cambiado el endpoint para coincidir con el backend
+    return this.http.post<HistorialClinico>(this.apiUrl + '/InsertarHistorialClinico', historial);
   }
 
   // Obtener todos los historiales y filtrar por médico
