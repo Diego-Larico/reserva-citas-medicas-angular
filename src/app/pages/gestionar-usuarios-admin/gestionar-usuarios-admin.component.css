@@ -442,6 +442,7 @@
   border-radius: 20px;
   background: #e1ecf8;
   position: relative;
+  -webkit-appearance: none;
   cursor: pointer;
 }
 

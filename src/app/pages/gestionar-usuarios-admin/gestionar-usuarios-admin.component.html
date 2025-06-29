@@ -71,7 +71,7 @@
       </div>
       <div class="usuario-acciones">
         <button class="btn-editar" (click)="editarUsuario(usuario)"><i class="fas fa-edit"></i> Editar</button>
-        <button class="btn-eliminar" (click)="eliminarUsuario(usuario.idUsuario)"><i class="fas fa-trash"></i> Eliminar</button>
+        <button class="btn-eliminar" *ngIf="usuario.idUsuario !== user.idUsuario" (click)="eliminarUsuario(usuario.idUsuario)"><i class="fas fa-trash"></i> Eliminar</button>
         <button class="btn-activar" *ngIf="!usuario.activo" (click)="cambiarEstadoUsuario(usuario.idUsuario, true)"><i class="fas fa-check"></i> Activar</button>
         <button class="btn-desactivar" *ngIf="usuario.activo" (click)="cambiarEstadoUsuario(usuario.idUsuario, false)"><i class="fas fa-ban"></i> Desactivar</button>
       </div>
@@ -120,18 +120,14 @@
         
         <div class="form-row">
           <div class="form-group">
-            <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" formControlName="telefono" placeholder="Teléfono de contacto">
-          </div>
-          <div class="form-group">
             <label for="rol">Rol</label>
-            <select id="rol" formControlName="rol" (change)="cambiarRol($event)">
-              <option value="paciente">Paciente</option>
-              <option value="medico">Médico</option>
-              <option value="admin">Administrador</option>
+            <select id="rol" formControlName="idRol" (change)="cambiarRol($event)">
+              <option [value]="3">Paciente</option>
+              <option [value]="2">Médico</option>
+              <option [value]="1">Administrador</option>
             </select>
           </div>
-          <div class="form-group" *ngIf="usuarioForm.get('rol')?.value === 'medico'">
+          <div class="form-group" *ngIf="usuarioForm.get('idRol')?.value == 2">
             <label for="especialidad">Especialidad</label>
             <select id="especialidad" formControlName="idEspecialidad">
               <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
@@ -160,7 +156,8 @@
     <div class="modal-acciones">
       <button class="btn-cerrar" (click)="cerrarModal()">Cancelar</button>
       <button class="btn-guardar" (click)="guardarUsuario()" [disabled]="usuarioForm.invalid">
-        <i class="fas fa-save"></i> {{ modalAccion === 'crear' ? 'Crear Usuario' : 'Guardar Cambios' }}
+        <i class="fas fa-save"></i>
+        {{ modalAccion === 'crear' ? 'Crear Usuario' : (usuarioForm.dirty ? 'Guardar Cambios' : 'Sin cambios') }}
       </button>
     </div>
   </div>

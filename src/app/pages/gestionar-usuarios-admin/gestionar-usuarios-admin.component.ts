@@ -5,6 +5,7 @@ import { EspecialidadService } from '../../services/especialidad.service';
 import { Usuario } from '../../models/usuario';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-gestionar-usuarios-admin',
@@ -134,9 +135,35 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     this.modalAbierto = true;
   }
 
-  guardarUsuario(): void {
+  async guardarUsuario(): Promise<void> {
     if (this.usuarioForm.invalid) return;
-    const usuarioData = this.usuarioForm.value;
+    const confirm = await Swal.fire({
+      title: this.modalAccion === 'crear' ? '¿Crear nuevo usuario?' : '¿Guardar cambios?',
+      text: this.modalAccion === 'crear' ? 'Se creará un nuevo usuario.' : 'Se guardarán los cambios del usuario.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    });
+    if (!confirm.isConfirmed) return;
+    const usuarioData = { ...this.usuarioForm.value };
+    // Forzar idRol a número
+    usuarioData.idRol = Number(usuarioData.idRol);
+    // Si el rol es paciente o admin, idEspecialidad debe ser 1 (sin_especialidad)
+    if (usuarioData.idRol === 1 || usuarioData.idRol === 3) {
+      usuarioData.idEspecialidad = 1;
+    } else if (usuarioData.idEspecialidad !== null && usuarioData.idEspecialidad !== undefined && usuarioData.idEspecialidad !== '') {
+      usuarioData.idEspecialidad = Number(usuarioData.idEspecialidad);
+    } else {
+      delete usuarioData.idEspecialidad;
+    }
+    // Eliminar campos que no deben ir al backend
+    delete usuarioData.estado_descripcion;
+    delete usuarioData.confirmPassword;
+    if (this.modalAccion === 'editar' && (!usuarioData.password || usuarioData.password === '')) {
+      delete usuarioData.password;
+    }
     if (this.modalAccion === 'crear') {
       this.usuarioService.crearUsuario(usuarioData).subscribe({
         next: () => {
@@ -160,17 +187,25 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     }
   }
 
-  eliminarUsuario(idUsuario: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.')) {
-      this.usuarioService.eliminarUsuario(idUsuario).subscribe({
-        next: () => {
-          this.cargarUsuarios();
-        },
-        error: (error) => {
-          console.error('Error al eliminar usuario', error);
-        }
-      });
-    }
+  async eliminarUsuario(idUsuario: number): Promise<void> {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar usuario?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    });
+    if (!confirm.isConfirmed) return;
+    this.usuarioService.eliminarUsuario(idUsuario).subscribe({
+      next: () => {
+        this.cargarUsuarios();
+      },
+      error: (error) => {
+        console.error('Error al eliminar usuario', error);
+      }
+    });
   }
 
   cerrarModal(): void {
@@ -190,7 +225,17 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     return esp ? esp.nombre : '';
   }
 
-  cambiarEstadoUsuario(idUsuario: number, activo: boolean): void {
+  async cambiarEstadoUsuario(idUsuario: number, activo: boolean): Promise<void> {
+    const confirm = await Swal.fire({
+      title: activo ? '¿Activar usuario?' : '¿Desactivar usuario?',
+      text: activo ? 'El usuario podrá acceder al sistema.' : 'El usuario no podrá acceder al sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: activo ? 'Sí, activar' : 'Sí, desactivar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    });
+    if (!confirm.isConfirmed) return;
     this.usuarioService.cambiarEstadoUsuario(idUsuario, activo).subscribe({
       next: () => {
         this.cargarUsuarios();
