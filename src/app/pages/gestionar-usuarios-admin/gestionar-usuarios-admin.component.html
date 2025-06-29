@@ -72,8 +72,8 @@
       <div class="usuario-acciones">
         <button class="btn-editar" (click)="editarUsuario(usuario)"><i class="fas fa-edit"></i> Editar</button>
         <button class="btn-eliminar" *ngIf="usuario.idUsuario !== user.idUsuario" (click)="eliminarUsuario(usuario.idUsuario)"><i class="fas fa-trash"></i> Eliminar</button>
-        <button class="btn-activar" *ngIf="!usuario.activo" (click)="cambiarEstadoUsuario(usuario.idUsuario, true)"><i class="fas fa-check"></i> Activar</button>
-        <button class="btn-desactivar" *ngIf="usuario.activo" (click)="cambiarEstadoUsuario(usuario.idUsuario, false)"><i class="fas fa-ban"></i> Desactivar</button>
+        <button class="btn-activar" *ngIf="!usuario.activo && usuario.idUsuario !== user.idUsuario" (click)="cambiarEstadoUsuario(usuario.idUsuario, true)"><i class="fas fa-check"></i> Activar</button>
+        <button class="btn-desactivar" *ngIf="usuario.activo && usuario.idUsuario !== user.idUsuario" (click)="cambiarEstadoUsuario(usuario.idUsuario, false)"><i class="fas fa-ban"></i> Desactivar</button>
       </div>
     </div>
   </div>

@@ -215,9 +215,19 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     }
     if (this.modalAccion === 'crear') {
       this.usuarioService.crearUsuario(usuarioData).subscribe({
-        next: () => {
+        next: async () => {
           this.cargarUsuarios();
           this.cerrarModal();
+          await Swal.fire({
+            icon: 'success',
+            title: 'Usuario creado',
+            text: 'El usuario ha sido creado exitosamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#218838',
+            background: '#fff', // Fondo blanco
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
         },
         error: (error) => {
           console.error('Error al crear usuario', error);
@@ -225,9 +235,19 @@ export class GestionarUsuariosAdminComponent implements OnInit {
       });
     } else if (this.usuarioEditando) {
       this.usuarioService.actualizarUsuario({ ...this.usuarioEditando, ...usuarioData }).subscribe({
-        next: () => {
+        next: async () => {
           this.cargarUsuarios();
           this.cerrarModal();
+          await Swal.fire({
+            icon: 'success',
+            title: 'Cambios guardados',
+            text: 'Los cambios del usuario han sido guardados exitosamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#218838',
+            background: '#fff', // Fondo blanco
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
         },
         error: (error) => {
           console.error('Error al actualizar usuario', error);
@@ -248,8 +268,18 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     });
     if (!confirm.isConfirmed) return;
     this.usuarioService.eliminarUsuario(idUsuario).subscribe({
-      next: () => {
+      next: async () => {
         this.cargarUsuarios();
+        await Swal.fire({
+          icon: 'success',
+          title: 'Usuario eliminado',
+          text: 'El usuario ha sido eliminado exitosamente.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#218838',
+          background: '#fff', // Fondo blanco
+          color: '#1a5a9e',
+          customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+        });
       },
       error: (error) => {
         console.error('Error al eliminar usuario', error);
@@ -290,8 +320,18 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     });
     if (!confirm.isConfirmed) return;
     this.usuarioService.cambiarEstadoUsuario(idUsuario, activo).subscribe({
-      next: () => {
+      next: async () => {
         this.cargarUsuarios();
+        await Swal.fire({
+          icon: 'success',
+          title: activo ? 'Usuario activado' : 'Usuario desactivado',
+          text: activo ? 'El usuario ha sido activado exitosamente.' : 'El usuario ha sido desactivado exitosamente.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#218838',
+          background: '#fff', // Fondo blanco
+          color: '#1a5a9e',
+          customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+        });
       },
       error: (error) => {
         console.error('Error al cambiar estado de usuario', error);

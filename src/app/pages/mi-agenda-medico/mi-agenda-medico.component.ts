@@ -150,7 +150,10 @@ export class MiAgendaMedicoComponent implements OnInit {
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#218838',
-      cancelButtonColor: '#d33'
+      cancelButtonColor: '#d33',
+      background: '#fff',
+      color: '#1a5a9e',
+      customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom', cancelButton: 'swal2-cancel-custom' }
     });
     if (result.isConfirmed) {
       const cita = this.citas.find(c => c.idCita === idCita);
@@ -159,7 +162,16 @@ export class MiAgendaMedicoComponent implements OnInit {
         this.citaService.actualizarCita(cita).subscribe(() => {
           this.aplicarFiltros();
           this.calcularResumenDia();
-          Swal.fire('Cita confirmada', '', 'success');
+          Swal.fire({
+            icon: 'success',
+            title: 'Cita confirmada',
+            text: 'La cita ha sido confirmada exitosamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#218838',
+            background: '#fff',
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
         });
       }
     }
@@ -183,7 +195,16 @@ export class MiAgendaMedicoComponent implements OnInit {
         this.citaService.actualizarCita(cita).subscribe(() => {
           this.aplicarFiltros();
           this.calcularResumenDia();
-          Swal.fire('Cita cancelada', '', 'success');
+          Swal.fire({
+            icon: 'success',
+            title: 'Cita cancelada',
+            text: 'La cita ha sido cancelada exitosamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#218838',
+            background: '#fff',
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
         });
       }
     }
@@ -249,7 +270,7 @@ export class MiAgendaMedicoComponent implements OnInit {
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#218838',
       cancelButtonColor: '#1a5a9e',
-      background: '#f5f9ff',
+      background: '#fff',
       color: '#1a5a9e',
       customClass: {
         popup: 'swal2-popup-custom',
@@ -276,7 +297,16 @@ export class MiAgendaMedicoComponent implements OnInit {
             this.tratamientoService.crearTratamientos(tratamientos).subscribe({
               next: () => {
                 this.finalizarAtencion();
-                Swal.fire('Éxito', 'Atención médica y tratamientos guardados correctamente', 'success');
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Éxito',
+                  text: 'Atención médica y tratamientos guardados correctamente',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#218838',
+                  background: '#fff',
+                  color: '#1a5a9e',
+                  customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+                });
                 this.cerrarModal();
                 this.cargarCitas();
               },
@@ -284,7 +314,16 @@ export class MiAgendaMedicoComponent implements OnInit {
             });
           } else {
             this.finalizarAtencion();
-            Swal.fire('Éxito', 'Atención médica guardada correctamente', 'success');
+            Swal.fire({
+              icon: 'success',
+              title: 'Éxito',
+              text: 'Atención médica guardada correctamente',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#218838',
+              background: '#fff',
+              color: '#1a5a9e',
+              customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+            });
             this.cerrarModal();
             this.cargarCitas();
           }
@@ -304,8 +343,10 @@ export class MiAgendaMedicoComponent implements OnInit {
         Swal.fire({
           title: 'Atención guardada',
           icon: 'success',
+          text: 'La atención médica ha sido guardada exitosamente.',
+          confirmButtonText: 'Aceptar',
           confirmButtonColor: '#218838',
-          background: '#f5f9ff',
+          background: '#fff',
           color: '#1a5a9e',
           customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
         });

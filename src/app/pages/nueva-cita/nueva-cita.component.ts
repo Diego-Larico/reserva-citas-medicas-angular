@@ -101,7 +101,10 @@ export class NuevaCitaComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, agendar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
+      background: '#fff',
+      color: '#1a5a9e',
+      customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
     });
     if (result.isConfirmed) {
       // Unir fecha y hora en un solo campo tipo datetime
@@ -119,11 +122,29 @@ export class NuevaCitaComponent implements OnInit {
       };
       this.citaService.insertarCita(cita).subscribe({
         next: () => {
-          Swal.fire('Cita agendada', 'La cita fue registrada correctamente.', 'success');
+          Swal.fire({
+            icon: 'success',
+            title: 'Cita agendada',
+            text: 'La cita fue registrada correctamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#218838',
+            background: '#fff',
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
           this.agendarOtraCita();
         },
         error: () => {
-          Swal.fire('Error', 'Error al agendar la cita. Intente nuevamente.', 'error');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al agendar la cita. Intente nuevamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d33',
+            background: '#fff',
+            color: '#1a5a9e',
+            customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+          });
         }
       });
     }

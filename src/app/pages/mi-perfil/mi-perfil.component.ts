@@ -148,7 +148,10 @@ export class MiPerfilComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, guardar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
+      background: '#fff',
+      color: '#1a5a9e',
+      customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
     }).then(result => {
       if (result.isConfirmed) {
         this.usuarioService.actualizarUsuario(this.usuarioEdit).subscribe({
@@ -159,13 +162,40 @@ export class MiPerfilComponent implements OnInit {
               if (!this.usuario.rol) {
                 this.usuario.rol = this.getRolFromId(this.usuario.idRol);
               }
-              Swal.fire('¡Actualizado!', 'Tu información ha sido actualizada.', 'success');
+              Swal.fire({
+                icon: 'success',
+                title: '¡Actualizado!',
+                text: 'Tu información ha sido actualizada.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#218838',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
             } else {
-              Swal.fire('Error', 'No se pudo actualizar la información.', 'error');
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo actualizar la información.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
             }
           },
           error: () => {
-            Swal.fire('Error', 'Ocurrió un error al actualizar.', 'error');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al actualizar.',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#d33',
+              background: '#fff',
+              color: '#1a5a9e',
+              customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+            });
           }
         });
       }
@@ -220,18 +250,54 @@ export class MiPerfilComponent implements OnInit {
               this.passwordActual = '';
               this.nuevoPassword = '';
               this.confirmarPassword = '';
-              Swal.fire('¡Contraseña actualizada!', 'Tu contraseña ha sido cambiada exitosamente.', 'success');
+              Swal.fire({
+                icon: 'success',
+                title: '¡Contraseña actualizada!',
+                text: 'Tu contraseña ha sido cambiada exitosamente.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#218838',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
             } else {
-              Swal.fire('Error', 'No se pudo actualizar la contraseña.', 'error');
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo actualizar la contraseña.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#d33',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
             }
           },
           error: () => {
-            Swal.fire('Error', 'Ocurrió un error al actualizar la contraseña.', 'error');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al actualizar la contraseña.',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#d33',
+              background: '#fff',
+              color: '#1a5a9e',
+              customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+            });
           }
         });
       },
       error: () => {
-        Swal.fire('Error', 'No se pudo validar la contraseña actual.', 'error');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo validar la contraseña actual.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#d33',
+          background: '#fff',
+          color: '#1a5a9e',
+          customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+        });
       }
     });
   }
