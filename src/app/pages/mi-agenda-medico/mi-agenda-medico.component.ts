@@ -5,6 +5,8 @@ import { CitaService, Cita } from '../../services/cita.service';
 import { Usuario } from '../../models/usuario';
 import { EspecialidadService, Especialidad } from '../../services/especialidad.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { HistorialClinicoService, HistorialClinico } from '../../services/historial-clinico.service';
+import { TratamientoService, Tratamiento } from '../../services/tratamiento.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -32,7 +34,7 @@ export class MiAgendaMedicoComponent implements OnInit {
 
   citaEnAtencion: Cita | null = null;
   historialTemporal: any = {
-    iCita: 0,
+    idCita: 0,
     idMedico: 0,
     diagnosticoPrincipal: '',
     codigoCIE10: '',
@@ -45,7 +47,9 @@ export class MiAgendaMedicoComponent implements OnInit {
   constructor(
     private citaService: CitaService,
     private especialidadService: EspecialidadService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private historialClinicoService: HistorialClinicoService,
+    private tratamientoService: TratamientoService
   ) {}
 
   ngOnInit(): void {
@@ -188,7 +192,7 @@ export class MiAgendaMedicoComponent implements OnInit {
   iniciarAtencion(cita: Cita): void {
     this.citaEnAtencion = cita;
     this.historialTemporal = {
-      iCita: cita.idCita,
+      idCita: cita.idCita,
       idMedico: this.usuario?.idUsuario,
       diagnosticoPrincipal: (cita as any).historial?.diagnosticoPrincipal || '',
       codigoCIE10: (cita as any).historial?.codigoCIE10 || '',
@@ -244,21 +248,67 @@ export class MiAgendaMedicoComponent implements OnInit {
       confirmButtonText: 'Sí, guardar',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#218838',
-      cancelButtonColor: '#d33'
+      cancelButtonColor: '#1a5a9e',
+      background: '#f5f9ff',
+      color: '#1a5a9e',
+      customClass: {
+        popup: 'swal2-popup-custom',
+        confirmButton: 'swal2-confirm-custom',
+        cancelButton: 'swal2-cancel-custom'
+      }
     });
     if (result.isConfirmed && this.citaEnAtencion) {
-      this.citaEnAtencion.estado = 'Completada';
-      (this.citaEnAtencion as any).historial = {
-        idHistorial: Math.floor(Math.random() * 1000) + 1, // Simulado
+      // 1. Guardar historial clínico
+      const historial: HistorialClinico = {
+        idCita: this.citaEnAtencion.idCita,
+        idMedico: this.usuario?.idUsuario!,
         diagnosticoPrincipal: this.historialTemporal.diagnosticoPrincipal,
-        codigoCIE10: this.historialTemporal.codigoCIE10,
+        codigoCie: this.historialTemporal.codigoCIE10,
         notasMedicas: this.historialTemporal.notasMedicas
       };
+      this.historialClinicoService.crearHistorial(historial).subscribe({
+        next: (historialGuardado) => {
+          if (this.tratamientosTemporales.length > 0) {
+            const tratamientos = this.tratamientosTemporales.map(t => ({
+              ...t,
+              idHistorial: historialGuardado.idHistorial
+            }));
+            this.tratamientoService.crearTratamientos(tratamientos).subscribe({
+              next: () => {
+                this.finalizarAtencion();
+                Swal.fire('Éxito', 'Atención médica y tratamientos guardados correctamente', 'success');
+                this.cerrarModal();
+                this.cargarCitas();
+              },
+              error: () => Swal.fire('Error', 'No se pudo guardar los tratamientos', 'error')
+            });
+          } else {
+            this.finalizarAtencion();
+            Swal.fire('Éxito', 'Atención médica guardada correctamente', 'success');
+            this.cerrarModal();
+            this.cargarCitas();
+          }
+        },
+        error: () => Swal.fire('Error', 'No se pudo guardar el historial clínico', 'error')
+      });
+    }
+  }
+
+  finalizarAtencion() {
+    if (this.citaEnAtencion) {
+      this.citaEnAtencion.estado = 'Completada';
       this.citaService.actualizarCita(this.citaEnAtencion).subscribe(() => {
         this.aplicarFiltros();
         this.calcularResumenDia();
         this.cerrarModal();
-        Swal.fire('Atención guardada', '', 'success');
+        Swal.fire({
+          title: 'Atención guardada',
+          icon: 'success',
+          confirmButtonColor: '#218838',
+          background: '#f5f9ff',
+          color: '#1a5a9e',
+          customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+        });
       });
     }
   }
@@ -271,7 +321,7 @@ export class MiAgendaMedicoComponent implements OnInit {
   cerrarModal(): void {
     this.citaEnAtencion = null;
     this.historialTemporal = {
-      iCita: 0,
+      idCita: 0,
       idMedico: 0,
       diagnosticoPrincipal: '',
       codigoCIE10: '',

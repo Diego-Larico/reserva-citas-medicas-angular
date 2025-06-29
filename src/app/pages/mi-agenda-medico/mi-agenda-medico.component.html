@@ -49,6 +49,7 @@
       <div *ngFor="let cita of citasFiltradas" class="cita-card">
         <div class="cita-header">
           <div class="cita-hora">
+            {{ cita.fecha_hora | date:'dd/MM' }}<br>
             {{ cita.fecha_hora | date:'HH:mm' }}
           </div>
           <div class="cita-info">
