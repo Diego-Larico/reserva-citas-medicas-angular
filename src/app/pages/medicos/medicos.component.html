@@ -33,6 +33,9 @@
       
       <div class="medico-info">
         <h3>Dr. {{ medico.nombre }} {{ medico.apPaterno }}</h3>
+        <span class="badge" [ngClass]="{'badge-activo': medico.activo, 'badge-inactivo': !medico.activo}">
+          {{ medico.estado_descripcion || (medico.activo ? 'Activo' : 'Inactivo') }}
+        </span>
         <p class="especialidad"><i class="fas fa-stethoscope"></i> {{ medico.especialidad?.nombre }}</p>
         
         <div class="medico-detalle">

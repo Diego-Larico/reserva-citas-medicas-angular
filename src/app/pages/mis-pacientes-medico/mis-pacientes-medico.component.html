@@ -35,6 +35,9 @@
           <div class="paciente-info">
             <h3>{{ paciente.nombre }} {{ paciente.apPaterno }} {{ paciente.apMaterno }}</h3>
             <p><i class="fas fa-envelope"></i> {{ paciente.email || 'Sin email' }}</p>
+            <span class="badge" [ngClass]="{'badge-activo': paciente.activo, 'badge-inactivo': !paciente.activo}">
+              {{ paciente.estado_descripcion || (paciente.activo ? 'Activo' : 'Inactivo') }}
+            </span>
           </div>
         </div>
         

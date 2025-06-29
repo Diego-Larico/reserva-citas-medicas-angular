@@ -58,7 +58,7 @@
             'badge-medico': usuario.idRol === 2,
             'badge-paciente': usuario.idRol === 3
           }">
-            {{ getRolNombre(usuario.idRol) | titlecase }}
+            {{ usuario.estado_descripcion || (usuario.activo ? 'Activo' : 'Inactivo') }}
           </span>
           <span *ngIf="usuario.idEspecialidad" class="badge badge-especialidad">
             {{ getEspecialidadNombre(usuario.idEspecialidad) }}

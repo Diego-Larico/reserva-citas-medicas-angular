@@ -15,6 +15,9 @@
           <h3>{{ usuario.nombre }} {{ usuario.apPaterno }} {{ usuario.apMaterno }}</h3>
           <p class="usuario-rol"><i class="fas fa-user-tag"></i> {{ usuario.rol?.nombre }}</p>
           <p class="usuario-email"><i class="fas fa-envelope"></i> {{ usuario.email }}</p>
+          <span class="badge" [ngClass]="{'badge-activo': usuario.activo, 'badge-inactivo': !usuario.activo}">
+            {{ usuario.estado_descripcion || (usuario.activo ? 'Activo' : 'Inactivo') }}
+          </span>
         </div>
       </div>
       

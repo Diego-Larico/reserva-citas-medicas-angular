@@ -46,7 +46,9 @@ export class GestionarUsuariosAdminComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       idRol: [3, Validators.required],
       idEspecialidad: [null],
-      activo: [true]
+      activo: [true],
+      // Nuevo campo para mostrar la descripción textual del estado
+      estado_descripcion: ['']
     });
   }
 
@@ -110,7 +112,8 @@ export class GestionarUsuariosAdminComponent implements OnInit {
       usuario: usuario.usuario,
       idRol: usuario.idRol,
       idEspecialidad: usuario.idEspecialidad,
-      activo: usuario.activo
+      activo: usuario.activo,
+      estado_descripcion: usuario.estado_descripcion
     });
     this.usuarioForm.get('password')?.clearValidators();
     this.usuarioForm.get('password')?.updateValueAndValidity();

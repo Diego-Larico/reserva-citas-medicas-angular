@@ -18,10 +18,12 @@ export class UsuarioService {
   }
 
   crearUsuario(usuario: Usuario): Observable<boolean> {
+    // Asegurarse de enviar todos los campos requeridos, incluyendo 'activo'
     return this.http.post<boolean>(`${this.apiUrl}/InsertarUsuario`, usuario);
   }
 
   actualizarUsuario(usuario: Usuario): Observable<boolean> {
+    // Asegurarse de enviar todos los campos requeridos, incluyendo 'activo'
     return this.http.put<boolean>(`${this.apiUrl}/ActualizarUsuario`, usuario);
   }
 
@@ -31,7 +33,7 @@ export class UsuarioService {
   }
 
   cambiarEstadoUsuario(idUsuario: number, activo: boolean): Observable<boolean> {
-    // Simula el cambio de estado enviando el usuario con el nuevo estado
-    return this.http.put<boolean>(`${this.apiUrl}/ActualizarUsuario`, { idUsuario, activo });
+    // Usar el endpoint específico para cambiar estado
+    return this.http.put<boolean>(`${this.apiUrl}/CambiarEstadoUsuario`, { idUsuario, activo });
   }
 }
