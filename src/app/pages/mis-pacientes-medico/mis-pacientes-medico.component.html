@@ -1,0 +1,169 @@
+<div class="pacientes-container">
+  <div class="pacientes-header">
+    <h2><i class="fas fa-users me-2"></i> Mis Pacientes</h2>
+    <div class="header-controls">
+      <div class="search-group">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Buscar paciente por nombre..." 
+               [(ngModel)]="filtroNombre" (input)="aplicarFiltros()">
+      </div>
+      <div class="filtro-group">
+        <label for="filtroEstado"><i class="fas fa-filter"></i> Estado:</label>
+        <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+          <option value="todos">Todos</option>
+          <option value="activos">Activos</option>
+          <option value="inactivos">Inactivos</option>
+          <option value="conCitas">Con citas próximas</option>
+        </select>
+      </div>
+      <button class="btn-refresh" (click)="cargarPacientes()">
+        <i class="fas" [ngClass]="{'fa-spinner fa-spin': cargando, 'fa-sync-alt': !cargando}"></i> 
+        {{ cargando ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </div>
+  </div>
+  
+  <div class="pacientes-content">
+    <div class="pacientes-list">
+      <div *ngIf="pacientesFiltrados.length === 0" class="no-pacientes">
+        <i class="fas fa-user-injured"></i>
+        <p>No se encontraron pacientes</p>
+      </div>
+
+      <div *ngFor="let paciente of pacientesFiltrados" class="paciente-card">
+        <div class="paciente-header">
+          <div class="paciente-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + (paciente.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ paciente.nombre }}">
+          </div>
+          <div class="paciente-info">
+            <h3>{{ paciente.nombre }} {{ paciente.apPaterno }} {{ paciente.apMaterno }}</h3>
+            <p><i class="fas fa-envelope"></i> {{ paciente.email || 'Sin email' }}</p>
+          </div>
+        </div>
+        
+        <div class="paciente-detalle">
+          <p><i class="fas fa-calendar-alt"></i> ID: {{ paciente.idUsuario }}</p>
+        </div>
+        
+        <div class="paciente-acciones">
+          <button class="btn-historial" (click)="verHistorial(paciente.idUsuario)">
+            <i class="fas fa-file-medical"></i> Ver Historial
+          </button>
+          <button class="btn-agendar" (click)="agendarCita(paciente.idUsuario)">
+            <i class="fas fa-calendar-plus"></i> Agendar Cita
+          </button>
+          <button class="btn-mensaje" (click)="enviarMensaje(paciente.idUsuario)">
+            <i class="fas fa-comment-dots"></i> Mensaje
+          </button>
+          <button class="btn-historial" (click)="abrirModalDetalles(paciente)">
+            <i class="fas fa-info-circle"></i> Detalles
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="resumen-pacientes">
+      <div class="resumen-card">
+        <h3><i class="fas fa-chart-pie"></i> Resumen General</h3>
+        <div class="resumen-item">
+          <span class="label">Total Pacientes</span>
+          <span class="value">{{ resumenGeneral.totalPacientes }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Pacientes Activos</span>
+          <span class="value">{{ resumenGeneral.pacientesActivos }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Citas este mes</span>
+          <span class="value">{{ resumenGeneral.citasEsteMes }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Pacientes nuevos</span>
+          <span class="value">{{ resumenGeneral.pacientesNuevos }}</span>
+        </div>
+      </div>
+      
+      <div class="resumen-card">
+        <h3><i class="fas fa-star"></i> Pacientes Frecuentes</h3>
+        <div class="top-pacientes">
+          <div *ngFor="let topPaciente of pacientesFrecuentes" class="paciente-top-item">
+            <div class="paciente-top-avatar">
+              <img [src]="'https://ui-avatars.com/api/?name=' + (topPaciente.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ topPaciente.nombre }}">
+            </div>
+            <div class="paciente-top-info">
+              <h4>{{ topPaciente.nombre }} {{ topPaciente.apPaterno }}</h4>
+              <p>{{ topPaciente.condicionPrincipal || 'Sin condición registrada' }}</p>
+            </div>
+            <div class="paciente-top-count">{{ topPaciente.totalCitas }} citas</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="resumen-card">
+        <h3><i class="fas fa-bell"></i> Próximas Citas</h3>
+        <div class="resumen-item">
+          <span class="label">Hoy</span>
+          <span class="value">{{ resumenProximasCitas.hoy }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Esta semana</span>
+          <span class="value">{{ resumenProximasCitas.estaSemana }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Próximos 7 días</span>
+          <span class="value">{{ resumenProximasCitas.proximos7Dias }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="label">Sin confirmar</span>
+          <span class="value">{{ resumenProximasCitas.sinConfirmar }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalles del paciente -->
+<div *ngIf="pacienteSeleccionado" class="modal-backdrop" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-modal" (click)="cerrarModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h3>Detalles del Paciente</h3>
+    </div>
+    
+    <div class="paciente-modal-header">
+      <div class="paciente-modal-avatar">
+        <img [src]="'https://ui-avatars.com/api/?name=' + (pacienteSeleccionado.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ pacienteSeleccionado.nombre }}">
+      </div>
+      <div class="paciente-modal-info">
+        <h4>{{ pacienteSeleccionado.nombre }} {{ pacienteSeleccionado.apPaterno }} {{ pacienteSeleccionado.apMaterno }}</h4>
+        <p><i class="fas fa-envelope"></i> {{ pacienteSeleccionado.email || 'Sin email' }}</p>
+      </div>
+    </div>
+    
+    <div class="modal-body">
+      <div class="modal-section">
+        <h4><i class="fas fa-calendar-alt"></i> Citas recientes</h4>
+        <div *ngIf="citasRecientes.length > 0">
+          <div *ngFor="let cita of citasRecientes" class="detalle-item">
+            <label>{{ cita.fecha_hora | date:'dd/MM/yyyy' }}</label>
+            <p><strong>Motivo:</strong> {{ cita.motivo }}</p>
+            <p><strong>Estado:</strong> {{ cita.estado }}</p>
+          </div>
+        </div>
+        <div *ngIf="citasRecientes.length === 0" class="detalle-item">
+          <p>No hay citas recientes para este paciente.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-acciones">
+      <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+      <button class="btn-agendar-modal" (click)="agendarCita(pacienteSeleccionado.idUsuario!)">
+        <i class="fas fa-calendar-plus"></i> Agendar Cita
+      </button>
+    </div>
+  </div>
+</div>
