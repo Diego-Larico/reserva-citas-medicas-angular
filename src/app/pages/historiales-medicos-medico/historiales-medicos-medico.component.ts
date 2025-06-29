@@ -26,7 +26,11 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
   };
   cargando: boolean = false;
 
-  constructor(private citaService: CitaService) {}
+  constructor(
+    private citaService: CitaService,
+    private historialClinicoService: HistorialClinicoService,
+    private usuarioService: UsuarioService
+  ) {}
 
   ngOnInit(): void {
     this.cargarHistoriales();
@@ -40,29 +44,44 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
       this.cargando = false;
       return;
     }
-    // Simulación: obtener todas las citas del médico y mapear a "historiales"
-    this.citaService.getCitas().subscribe({
-      next: (citas) => {
-        const historiales = citas.filter(c => c.idMedico === +idMedico).map(c => ({
-          idHistorial: c.idCita, // Simulación: usar idCita como idHistorial
-          paciente: {
-            nombre: 'Paciente',
-            apPaterno: 'Demo',
-            apMaterno: '',
-            email: 'paciente@demo.com',
-            idUsuario: c.idPaciente,
-            fechaNacimiento: '1990-01-01'
-          },
-          fechaCreacion: c.fecha_hora,
-          diagnosticoPrincipal: c.motivo || 'Diagnóstico de ejemplo',
-          notasMedicas: 'Notas de ejemplo',
-          tratamientos: [
-            { medicamento: 'Paracetamol', dosis: '500mg', frecuencia: '2 veces al día', duracion: '5 días', instrucciones: 'Tomar con agua' }
-          ]
-        }));
-        this.historiales = historiales;
-        this.historialesFiltrados = [...this.historiales];
-        this.cargando = false;
+    this.historialClinicoService.obtenerHistorialesPorMedico(+idMedico).subscribe({
+      next: (historiales) => {
+        // Para cada historial, obtener cita y paciente
+        const historialRequests = historiales.map((historial: any) => {
+          return new Promise<any>((resolve) => {
+            this.citaService.getCitas().subscribe({
+              next: (citas) => {
+                const cita = citas.find((c: any) => c.idCita === historial.idCita);
+                if (cita) {
+                  this.usuarioService.getUsuarioPorId(cita.idPaciente).subscribe({
+                    next: (paciente) => {
+                      resolve({
+                        ...historial,
+                        paciente,
+                        fechaCreacion: historial.fechaCreacion || cita.fecha_hora,
+                        diagnosticoPrincipal: historial.diagnosticoPrincipal,
+                        notasMedicas: historial.notasMedicas,
+                        tratamientos: [], // Puedes cargar tratamientos si lo deseas
+                        cita
+                      });
+                    },
+                    error: () => {
+                      resolve({ ...historial, paciente: null, cita });
+                    }
+                  });
+                } else {
+                  resolve({ ...historial, paciente: null, cita: null });
+                }
+              },
+              error: () => resolve({ ...historial, paciente: null, cita: null })
+            });
+          });
+        });
+        Promise.all(historialRequests).then((historialesCompletos) => {
+          this.historiales = historialesCompletos;
+          this.historialesFiltrados = [...this.historiales];
+          this.cargando = false;
+        });
       },
       error: () => {
         this.cargando = false;
