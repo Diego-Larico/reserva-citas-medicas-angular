@@ -157,6 +157,12 @@ export class MisPacientesMedicoComponent implements OnInit {
     this.pacientesFiltrados = filtrados;
   }
 
+  limpiarFiltros(): void {
+    this.filtroNombre = '';
+    this.filtroEstado = 'todos';
+    this.aplicarFiltros();
+  }
+
   verHistorial(idPaciente: number): void {
     this.router.navigate(['/dashboard/historial', idPaciente]);
   }

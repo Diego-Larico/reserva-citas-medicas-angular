@@ -14,9 +14,8 @@
           <option value="conCitas">Con citas próximas</option>
         </select>
       </div>
-      <button class="btn-refresh" (click)="cargarPacientes()">
-        <i class="fas" [ngClass]="{'fa-spinner fa-spin': cargando, 'fa-sync-alt': !cargando}"></i> 
-        {{ cargando ? 'Cargando...' : 'Actualizar' }}
+      <button class="btn-refresh" (click)="limpiarFiltros()">
+        <i class="fas fa-eraser"></i> Limpiar Filtros
       </button>
     </div>
   </div>
@@ -44,6 +43,7 @@
         </div>
         
         <div class="paciente-acciones">
+
           <button class="btn-detalles" (click)="abrirModalDetalles(paciente)">
             <i class="fas fa-info-circle"></i> Detalles
           </button>
