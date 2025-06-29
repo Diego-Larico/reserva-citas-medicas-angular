@@ -26,6 +26,10 @@ export class LoginComponent {
       next: (usuario) => {
         console.log('Login correcto', usuario);
         localStorage.setItem('usuario', JSON.stringify(usuario));
+        // Guardar idUsuario para acceso global
+        if (usuario && usuario.idUsuario) {
+          localStorage.setItem('idUsuario', usuario.idUsuario.toString());
+        }
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {

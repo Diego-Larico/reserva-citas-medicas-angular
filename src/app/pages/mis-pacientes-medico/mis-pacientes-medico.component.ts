@@ -52,16 +52,20 @@ export class MisPacientesMedicoComponent implements OnInit {
     const idMedico = localStorage.getItem('idUsuario');
     if (!idMedico) {
       this.cargando = false;
+      console.warn('No se encontró idUsuario en localStorage');
       return;
     }
     this.citaService.getCitas().subscribe({
       next: (citas) => {
-        const pacientesIds = Array.from(new Set(
-          citas.filter(c => c.idMedico === +idMedico).map(c => c.idPaciente)
-        ));
+        console.log('Citas obtenidas:', citas);
+        const citasMedico = citas.filter(c => c.idMedico === +idMedico);
+        console.log('Citas del médico:', citasMedico);
+        const pacientesIds = Array.from(new Set(citasMedico.map(c => c.idPaciente)));
+        console.log('IDs de pacientes:', pacientesIds);
         if (pacientesIds.length === 0) {
           this.pacientes = [];
           this.pacientesFiltrados = [];
+          this.resumenGeneral.totalPacientes = 0;
           this.cargando = false;
           return;
         }
@@ -75,22 +79,28 @@ export class MisPacientesMedicoComponent implements OnInit {
               if (completados === pacientesIds.length) {
                 this.pacientes = pacientesTemp;
                 this.pacientesFiltrados = [...this.pacientes];
+                this.resumenGeneral.totalPacientes = this.pacientes.length;
                 this.cargando = false;
+                console.log('Pacientes encontrados:', this.pacientes);
               }
             },
-            error: () => {
+            error: (err) => {
               completados++;
+              console.warn('No se encontró el usuario con id', id, err);
               if (completados === pacientesIds.length) {
                 this.pacientes = pacientesTemp;
                 this.pacientesFiltrados = [...this.pacientes];
+                this.resumenGeneral.totalPacientes = this.pacientes.length;
                 this.cargando = false;
+                console.log('Pacientes encontrados (con errores):', this.pacientes);
               }
             }
           });
         });
       },
-      error: () => {
+      error: (err) => {
         this.cargando = false;
+        console.error('Error al obtener citas:', err);
       }
     });
   }
