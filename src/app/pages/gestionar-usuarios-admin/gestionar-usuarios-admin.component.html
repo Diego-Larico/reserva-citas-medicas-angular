@@ -79,49 +79,45 @@
   </div>
 </div>
 
-<!-- Modal para crear/editar usuario -->
-<div *ngIf="modalAbierto" class="modal-backdrop" (click)="cerrarModal()">
+<!-- Modal para crear usuario -->
+<div *ngIf="modalAbierto && modalAccion === 'crear'" class="modal-backdrop" (click)="cerrarModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <button class="btn-cerrar-modal" (click)="cerrarModal()">
       <i class="fas fa-times"></i>
     </button>
-    
     <div class="modal-header">
-      <h3>{{ modalAccion === 'crear' ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}</h3>
+      <h3>Crear Nuevo Usuario</h3>
     </div>
-    
     <div class="modal-body">
       <form [formGroup]="usuarioForm">
         <div class="form-row">
           <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" formControlName="nombre" placeholder="Nombre del usuario">
+            <input type="text" id="nombre" formControlName="nombre" placeholder="Nombre del usuario" required>
           </div>
           <div class="form-group">
             <label for="apPaterno">Apellido Paterno</label>
-            <input type="text" id="apPaterno" formControlName="apPaterno" placeholder="Apellido paterno">
+            <input type="text" id="apPaterno" formControlName="apPaterno" placeholder="Apellido paterno" required>
           </div>
           <div class="form-group">
             <label for="apMaterno">Apellido Materno</label>
             <input type="text" id="apMaterno" formControlName="apMaterno" placeholder="Apellido materno">
           </div>
         </div>
-        
         <div class="form-row">
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" formControlName="email" placeholder="correo@ejemplo.com">
+            <input type="email" id="email" formControlName="email" placeholder="correo@ejemplo.com" required>
           </div>
           <div class="form-group">
             <label for="usuario">Nombre de Usuario</label>
-            <input type="text" id="usuario" formControlName="usuario" placeholder="Nombre de usuario">
+            <input type="text" id="usuario" formControlName="usuario" placeholder="Nombre de usuario" required>
           </div>
         </div>
-        
         <div class="form-row">
           <div class="form-group">
             <label for="rol">Rol</label>
-            <select id="rol" formControlName="idRol" (change)="cambiarRol($event)">
+            <select id="rol" formControlName="idRol" (change)="cambiarRol($event)" required>
               <option [value]="3">Paciente</option>
               <option [value]="2">Médico</option>
               <option [value]="1">Administrador</option>
@@ -130,34 +126,105 @@
           <div class="form-group" *ngIf="usuarioForm.get('idRol')?.value == 2">
             <label for="especialidad">Especialidad</label>
             <select id="especialidad" formControlName="idEspecialidad">
+              <option value="">Sin especialidad</option>
               <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
             </select>
           </div>
         </div>
-        
-        <div class="form-row" *ngIf="modalAccion === 'crear'">
+        <div class="form-row">
           <div class="form-group">
             <label for="password">Contraseña</label>
-            <input type="password" id="password" formControlName="password" placeholder="Contraseña">
+            <input type="password" id="password" formControlName="password" placeholder="Contraseña" required>
+            <div *ngIf="usuarioForm.get('password')?.touched && usuarioForm.get('password')?.invalid" class="input-error">
+              <span *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
+              <span *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
+            </div>
+            <div class="input-hint">Mínimo 6 caracteres.</div>
           </div>
           <div class="form-group">
             <label for="confirmPassword">Confirmar Contraseña</label>
-            <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirmar contraseña">
+            <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirmar contraseña" required>
           </div>
         </div>
-        
         <div class="form-switch">
           <input type="checkbox" id="activo" formControlName="activo">
           <label for="activo">Usuario Activo</label>
         </div>
       </form>
     </div>
-    
+    <div class="modal-acciones">
+      <button class="btn-cerrar" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-guardar" (click)="guardarUsuario()">
+        <i class="fas fa-save"></i>
+        Crear Usuario
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar usuario -->
+<div *ngIf="modalAbierto && modalAccion === 'editar'" class="modal-backdrop" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-modal" (click)="cerrarModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="modal-header">
+      <h3>Editar Usuario</h3>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="usuarioForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" formControlName="nombre" placeholder="Nombre del usuario" required>
+          </div>
+          <div class="form-group">
+            <label for="apPaterno">Apellido Paterno</label>
+            <input type="text" id="apPaterno" formControlName="apPaterno" placeholder="Apellido paterno" required>
+          </div>
+          <div class="form-group">
+            <label for="apMaterno">Apellido Materno</label>
+            <input type="text" id="apMaterno" formControlName="apMaterno" placeholder="Apellido materno">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" formControlName="email" placeholder="correo@ejemplo.com" required>
+          </div>
+          <div class="form-group">
+            <label for="usuario">Nombre de Usuario</label>
+            <input type="text" id="usuario" formControlName="usuario" placeholder="Nombre de usuario" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rol">Rol</label>
+            <select id="rol" formControlName="idRol" (change)="cambiarRol($event)" required>
+              <option [value]="3">Paciente</option>
+              <option [value]="2">Médico</option>
+              <option [value]="1">Administrador</option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="usuarioForm.get('idRol')?.value == 2">
+            <label for="especialidad">Especialidad</label>
+            <select id="especialidad" formControlName="idEspecialidad">
+              <option value="">Sin especialidad</option>
+              <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-switch">
+          <input type="checkbox" id="activo" formControlName="activo">
+          <label for="activo">Usuario Activo</label>
+        </div>
+      </form>
+    </div>
     <div class="modal-acciones">
       <button class="btn-cerrar" (click)="cerrarModal()">Cancelar</button>
       <button class="btn-guardar" (click)="guardarUsuario()" [disabled]="usuarioForm.invalid">
         <i class="fas fa-save"></i>
-        {{ modalAccion === 'crear' ? 'Crear Usuario' : (usuarioForm.dirty ? 'Guardar Cambios' : 'Sin cambios') }}
+        {{ usuarioForm.dirty ? 'Guardar Cambios' : 'Sin cambios' }}
       </button>
     </div>
   </div>

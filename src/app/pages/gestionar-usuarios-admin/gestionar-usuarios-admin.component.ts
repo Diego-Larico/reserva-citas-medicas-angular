@@ -109,6 +109,15 @@ export class GestionarUsuariosAdminComponent implements OnInit {
 
   abrirModalCrearUsuario(): void {
     this.modalAccion = 'crear';
+    // Asegura que confirmPassword esté en el form
+    if (!this.usuarioForm.contains('confirmPassword')) {
+      this.usuarioForm.addControl('confirmPassword', this.fb.control('', [Validators.required]));
+    }
+    // Quitar required de idEspecialidad
+    this.usuarioForm.get('idEspecialidad')?.clearValidators();
+    this.usuarioForm.get('idEspecialidad')?.updateValueAndValidity();
+    this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usuarioForm.get('password')?.updateValueAndValidity();
     this.usuarioForm.reset({
       idRol: 3,
       activo: true
@@ -119,6 +128,13 @@ export class GestionarUsuariosAdminComponent implements OnInit {
   editarUsuario(usuario: Usuario): void {
     this.modalAccion = 'editar';
     this.usuarioEditando = usuario;
+    // Elimina confirmPassword si existe
+    if (this.usuarioForm.contains('confirmPassword')) {
+      this.usuarioForm.removeControl('confirmPassword');
+    }
+    // Quitar required de idEspecialidad
+    this.usuarioForm.get('idEspecialidad')?.clearValidators();
+    this.usuarioForm.get('idEspecialidad')?.updateValueAndValidity();
     this.usuarioForm.patchValue({
       nombre: usuario.nombre,
       apPaterno: usuario.apPaterno,
@@ -136,7 +152,43 @@ export class GestionarUsuariosAdminComponent implements OnInit {
   }
 
   async guardarUsuario(): Promise<void> {
-    if (this.usuarioForm.invalid) return;
+    this.usuarioForm.markAllAsTouched();
+    this.usuarioForm.markAsDirty();
+    // Validación de campos requeridos y coincidencia de contraseñas
+    if (this.usuarioForm.invalid) {
+      // Si el email es inválido y fue tocado, mostrar error específico
+      if (this.usuarioForm.get('email')?.errors?.['email']) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Email inválido',
+          text: 'Por favor, ingresa un email válido.',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
+      }
+      // Si cualquier otro campo está vacío o inválido
+      await Swal.fire({
+        icon: 'error',
+        title: 'Formulario incompleto',
+        text: 'Por favor, llena todos los campos requeridos correctamente.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+    if (this.modalAccion === 'crear') {
+      const password = this.usuarioForm.get('password')?.value;
+      const confirmPassword = this.usuarioForm.get('confirmPassword')?.value;
+      if (password !== confirmPassword) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Contraseñas no coinciden',
+          text: 'La contraseña y la confirmación no son iguales.',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
+      }
+    }
+    // Confirmación SweetAlert
     const confirm = await Swal.fire({
       title: this.modalAccion === 'crear' ? '¿Crear nuevo usuario?' : '¿Guardar cambios?',
       text: this.modalAccion === 'crear' ? 'Se creará un nuevo usuario.' : 'Se guardarán los cambios del usuario.',
@@ -148,9 +200,7 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     });
     if (!confirm.isConfirmed) return;
     const usuarioData = { ...this.usuarioForm.value };
-    // Forzar idRol a número
     usuarioData.idRol = Number(usuarioData.idRol);
-    // Si el rol es paciente o admin, idEspecialidad debe ser 1 (sin_especialidad)
     if (usuarioData.idRol === 1 || usuarioData.idRol === 3) {
       usuarioData.idEspecialidad = 1;
     } else if (usuarioData.idEspecialidad !== null && usuarioData.idEspecialidad !== undefined && usuarioData.idEspecialidad !== '') {
@@ -158,7 +208,6 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     } else {
       delete usuarioData.idEspecialidad;
     }
-    // Eliminar campos que no deben ir al backend
     delete usuarioData.estado_descripcion;
     delete usuarioData.confirmPassword;
     if (this.modalAccion === 'editar' && (!usuarioData.password || usuarioData.password === '')) {
@@ -211,6 +260,10 @@ export class GestionarUsuariosAdminComponent implements OnInit {
   cerrarModal(): void {
     this.modalAbierto = false;
     this.usuarioEditando = null;
+    // Elimina confirmPassword si existe
+    if (this.usuarioForm.contains('confirmPassword')) {
+      this.usuarioForm.removeControl('confirmPassword');
+    }
     this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
     this.usuarioForm.get('password')?.updateValueAndValidity();
   }
@@ -248,7 +301,10 @@ export class GestionarUsuariosAdminComponent implements OnInit {
 
   cambiarRol(event: any): void {
     const rol = event.target.value;
-    if (rol !== 'medico') {
+    // Quitar required de idEspecialidad siempre
+    this.usuarioForm.get('idEspecialidad')?.clearValidators();
+    this.usuarioForm.get('idEspecialidad')?.updateValueAndValidity();
+    if (rol !== 'medico' && rol !== 2) {
       this.usuarioForm.get('idEspecialidad')?.setValue(null);
     }
   }
