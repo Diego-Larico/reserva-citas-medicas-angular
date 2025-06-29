@@ -57,15 +57,51 @@ export class MisPacientesMedicoComponent implements OnInit {
     }
     this.citaService.getCitas().subscribe({
       next: (citas) => {
-        console.log('Citas obtenidas:', citas);
+        // Filtrar solo citas del médico logueado
         const citasMedico = citas.filter(c => c.idMedico === +idMedico);
-        console.log('Citas del médico:', citasMedico);
+        this.citasRecientes = citasMedico;
+        // Calcular resumen de próximas citas
+        const hoy = new Date();
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay()); // Domingo
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(inicioSemana.getDate() + 6); // Sábado
+        const dentro7dias = new Date(hoy);
+        dentro7dias.setDate(hoy.getDate() + 7);
+        this.resumenProximasCitas = {
+          hoy: citasMedico.filter(c => {
+            const f = new Date(c.fecha_hora);
+            return f.getDate() === hoy.getDate() && f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear();
+          }).length,
+          estaSemana: citasMedico.filter(c => {
+            const f = new Date(c.fecha_hora);
+            return f >= inicioSemana && f <= finSemana;
+          }).length,
+          proximos7Dias: citasMedico.filter(c => {
+            const f = new Date(c.fecha_hora);
+            return f > hoy && f <= dentro7dias;
+          }).length,
+          sinConfirmar: citasMedico.filter(c => c.estado && c.estado.toLowerCase() === 'sin confirmar').length
+        };
+        // Calcular resumen general
+        const mesActual = hoy.getMonth();
+        const anioActual = hoy.getFullYear();
+        this.resumenGeneral = {
+          totalPacientes: Array.from(new Set(citasMedico.map(c => c.idPaciente))).length,
+          pacientesActivos: Array.from(new Set(citasMedico.filter(c => new Date(c.fecha_hora) >= hoy).map(c => c.idPaciente))).length,
+          citasEsteMes: citasMedico.filter(c => {
+            const f = new Date(c.fecha_hora);
+            return f.getMonth() === mesActual && f.getFullYear() === anioActual;
+          }).length,
+          pacientesNuevos: Array.from(new Set(citasMedico.filter(c => {
+            const f = new Date(c.fecha_hora);
+            return f.getMonth() === mesActual && f.getFullYear() === anioActual;
+          }).map(c => c.idPaciente))).length
+        };
         const pacientesIds = Array.from(new Set(citasMedico.map(c => c.idPaciente)));
-        console.log('IDs de pacientes:', pacientesIds);
         if (pacientesIds.length === 0) {
           this.pacientes = [];
           this.pacientesFiltrados = [];
-          this.resumenGeneral.totalPacientes = 0;
           this.cargando = false;
           return;
         }
@@ -79,20 +115,15 @@ export class MisPacientesMedicoComponent implements OnInit {
               if (completados === pacientesIds.length) {
                 this.pacientes = pacientesTemp;
                 this.pacientesFiltrados = [...this.pacientes];
-                this.resumenGeneral.totalPacientes = this.pacientes.length;
                 this.cargando = false;
-                console.log('Pacientes encontrados:', this.pacientes);
               }
             },
             error: (err) => {
               completados++;
-              console.warn('No se encontró el usuario con id', id, err);
               if (completados === pacientesIds.length) {
                 this.pacientes = pacientesTemp;
                 this.pacientesFiltrados = [...this.pacientes];
-                this.resumenGeneral.totalPacientes = this.pacientes.length;
                 this.cargando = false;
-                console.log('Pacientes encontrados (con errores):', this.pacientes);
               }
             }
           });
@@ -106,11 +137,24 @@ export class MisPacientesMedicoComponent implements OnInit {
   }
 
   aplicarFiltros(): void {
-    this.pacientesFiltrados = this.pacientes.filter(paciente => {
-      const nombreCompleto = `${paciente.nombre} ${paciente.apPaterno} ${paciente.apMaterno}`.toLowerCase();
-      const coincideNombre = nombreCompleto.includes(this.filtroNombre.toLowerCase());
-      return coincideNombre;
+    // Filtrado por nombre
+    let filtrados = this.pacientes.filter(p => {
+      const nombreCompleto = `${p.nombre} ${p.apPaterno} ${p.apMaterno}`.toLowerCase();
+      return nombreCompleto.includes(this.filtroNombre.toLowerCase());
     });
+
+    // Filtrado por estado
+    if (this.filtroEstado === 'conCitas') {
+      const ahora = new Date();
+      filtrados = filtrados.filter(paciente => {
+        // Buscar si el paciente tiene al menos una cita futura con el médico logueado
+        return this.citasRecientes.some(cita =>
+          cita.idPaciente === paciente.idUsuario && new Date(cita.fecha_hora) > ahora
+        );
+      });
+    }
+
+    this.pacientesFiltrados = filtrados;
   }
 
   verHistorial(idPaciente: number): void {

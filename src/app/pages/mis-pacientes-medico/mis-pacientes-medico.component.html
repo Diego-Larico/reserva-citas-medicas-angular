@@ -11,8 +11,6 @@
         <label for="filtroEstado"><i class="fas fa-filter"></i> Estado:</label>
         <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
           <option value="todos">Todos</option>
-          <option value="activos">Activos</option>
-          <option value="inactivos">Inactivos</option>
           <option value="conCitas">Con citas próximas</option>
         </select>
       </div>
@@ -33,7 +31,7 @@
       <div *ngFor="let paciente of pacientesFiltrados" class="paciente-card">
         <div class="paciente-header">
           <div class="paciente-avatar">
-            <img [src]="'https://ui-avatars.com/api/?name=' + (paciente.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ paciente.nombre }}">
+            <img [src]="'https://ui-avatars.com/api/?name=' + (paciente.nombre ? paciente.nombre.charAt(0) : '') + (paciente.apPaterno ? '+' + paciente.apPaterno.charAt(0) : '') + '&background=0D8ABC&color=fff'" alt="{{ paciente.nombre }}">
           </div>
           <div class="paciente-info">
             <h3>{{ paciente.nombre }} {{ paciente.apPaterno }} {{ paciente.apMaterno }}</h3>
@@ -46,16 +44,7 @@
         </div>
         
         <div class="paciente-acciones">
-          <button class="btn-historial" (click)="verHistorial(paciente.idUsuario)">
-            <i class="fas fa-file-medical"></i> Ver Historial
-          </button>
-          <button class="btn-agendar" (click)="agendarCita(paciente.idUsuario)">
-            <i class="fas fa-calendar-plus"></i> Agendar Cita
-          </button>
-          <button class="btn-mensaje" (click)="enviarMensaje(paciente.idUsuario)">
-            <i class="fas fa-comment-dots"></i> Mensaje
-          </button>
-          <button class="btn-historial" (click)="abrirModalDetalles(paciente)">
+          <button class="btn-detalles" (click)="abrirModalDetalles(paciente)">
             <i class="fas fa-info-circle"></i> Detalles
           </button>
         </div>
@@ -161,9 +150,6 @@
     
     <div class="modal-acciones">
       <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
-      <button class="btn-agendar-modal" (click)="agendarCita(pacienteSeleccionado.idUsuario!)">
-        <i class="fas fa-calendar-plus"></i> Agendar Cita
-      </button>
     </div>
   </div>
 </div>

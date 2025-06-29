@@ -261,23 +261,23 @@
 }
 
 .btn-historial {
-  background: #e3f2fd;
-  color: #1976d2;
-  border-color: #bbdefb;
-}
-
-.btn-historial:hover {
-  background: #d1e5f7;
-}
-
-.btn-agendar {
   background: #e8f5e9;
   color: #388e3c;
   border-color: #c8e6c9;
 }
 
-.btn-agendar:hover {
+.btn-historial:hover {
   background: #d4edda;
+}
+
+.btn-detalles {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-color: #bbdefb;
+}
+
+.btn-detalles:hover {
+  background: #d1e5f7;
 }
 
 .btn-mensaje {
