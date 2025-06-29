@@ -1,0 +1,208 @@
+<div class="historiales-container">
+  <div class="historiales-header">
+    <h2><i class="fas fa-file-medical me-2"></i> Historiales Médicos</h2>
+    <div class="header-controls">
+      <div class="search-group">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Buscar por paciente, diagnóstico..." 
+               [(ngModel)]="filtroBusqueda" (input)="aplicarFiltros()">
+      </div>
+      <div class="filtro-group">
+        <label for="filtroFecha"><i class="fas fa-calendar"></i> Fecha:</label>
+        <select id="filtroFecha" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()">
+          <option value="todos">Todas las fechas</option>
+          <option value="hoy">Hoy</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes">Este mes</option>
+          <option value="anio">Este año</option>
+        </select>
+      </div>
+      <button class="btn-refresh" (click)="cargarHistoriales()">
+        <i class="fas" [ngClass]="{'fa-spinner fa-spin': cargando, 'fa-sync-alt': !cargando}"></i> 
+        {{ cargando ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </div>
+  </div>
+  
+  <div class="resumen-section">
+    <div class="resumen-card">
+      <div class="resumen-icon">
+        <i class="fas fa-file-medical-alt"></i>
+      </div>
+      <div class="resumen-info">
+        <h4>Total Historiales</h4>
+        <p>{{ resumen.totalHistoriales }}</p>
+      </div>
+    </div>
+    <div class="resumen-card">
+      <div class="resumen-icon">
+        <i class="fas fa-user-md"></i>
+      </div>
+      <div class="resumen-info">
+        <h4>Pacientes Únicos</h4>
+        <p>{{ resumen.pacientesUnicos }}</p>
+      </div>
+    </div>
+    <div class="resumen-card">
+      <div class="resumen-icon">
+        <i class="fas fa-pills"></i>
+      </div>
+      <div class="resumen-info">
+        <h4>Tratamientos Recetados</h4>
+        <p>{{ resumen.tratamientosRecetados }}</p>
+      </div>
+    </div>
+    <div class="resumen-card">
+      <div class="resumen-icon">
+        <i class="fas fa-stethoscope"></i>
+      </div>
+      <div class="resumen-info">
+        <h4>Diagnósticos Comunes</h4>
+        <p>{{ resumen.diagnosticosComunes }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="historiales-list">
+    <div *ngIf="historialesFiltrados.length === 0" class="no-historiales">
+      <i class="fas fa-file-medical"></i>
+      <p>No se encontraron historiales médicos</p>
+      <p *ngIf="filtroBusqueda">Intenta con otro término de búsqueda</p>
+    </div>
+    
+    <div *ngFor="let historial of historialesFiltrados" class="historial-card">
+      <div class="historial-header">
+        <div class="paciente-info">
+          <div class="paciente-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + (historial.paciente.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historial.paciente.nombre }}">
+          </div>
+          <div>
+            <h3>{{ historial.paciente.nombre }} {{ historial.paciente.apPaterno }}</h3>
+            <p><i class="fas fa-birthday-cake"></i> {{ calcularEdad(historial.paciente.fechaNacimiento) }} años</p>
+          </div>
+        </div>
+        <div class="historial-meta">
+          <p><i class="fas fa-calendar-alt"></i> {{ historial.fechaCreacion | date:'dd/MM/yyyy' }}</p>
+          <p><i class="fas fa-user-md"></i> Dr. {{ historial.medico.nombre }} {{ historial.medico.apPaterno }}</p>
+        </div>
+      </div>
+      
+      <div class="historial-content">
+        <div class="diagnostico-section">
+          <h4><i class="fas fa-diagnoses"></i> Diagnóstico</h4>
+          <p><strong>Principal:</strong> {{ historial.diagnosticoPrincipal }}</p>
+          <p *ngIf="historial.codigoCie"><strong>Código CIE-10:</strong> {{ historial.codigoCie }}</p>
+          <p><strong>Notas:</strong> {{ historial.notasMedicas || 'Sin notas adicionales' }}</p>
+        </div>
+        
+        <div class="tratamientos-section" *ngIf="historial.tratamientos && historial.tratamientos.length > 0">
+          <h4><i class="fas fa-pills"></i> Tratamientos</h4>
+          <div class="tratamiento-item" *ngFor="let tratamiento of historial.tratamientos">
+            <p><strong>{{ tratamiento.medicamento }}</strong> - {{ tratamiento.dosis }}</p>
+            <p>{{ tratamiento.frecuencia }} durante {{ tratamiento.duracion }}</p>
+            <p *ngIf="tratamiento.instrucciones"><em>{{ tratamiento.instrucciones }}</em></p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="historial-acciones">
+        <button class="btn-ver-detalle" (click)="verDetalleHistorial(historial.idHistorial)">
+          <i class="fas fa-eye"></i> Ver Detalle Completo
+        </button>
+        <button class="btn-descargar" (click)="descargarHistorial(historial.idHistorial)">
+          <i class="fas fa-download"></i> Descargar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalle completo -->
+<div *ngIf="historialSeleccionado" class="modal-backdrop" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-modal" (click)="cerrarModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h3>Historial Médico Completo</h3>
+      <p>ID: {{ historialSeleccionado.idHistorial }}</p>
+    </div>
+    
+    <div class="modal-body">
+      <div class="seccion-paciente">
+        <div class="paciente-info">
+          <div class="paciente-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + (historialSeleccionado.paciente.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historialSeleccionado.paciente.nombre }}">
+          </div>
+          <div>
+            <h4>{{ historialSeleccionado.paciente.nombre }} {{ historialSeleccionado.paciente.apPaterno }} {{ historialSeleccionado.paciente.apMaterno }}</h4>
+            <p><i class="fas fa-birthday-cake"></i> {{ historialSeleccionado.paciente.fechaNacimiento | date:'dd/MM/yyyy' }} ({{ calcularEdad(historialSeleccionado.paciente.fechaNacimiento) }} años)</p>
+            <p><i class="fas fa-venus-mars"></i> {{ historialSeleccionado.paciente.genero || 'No especificado' }}</p>
+            <p><i class="fas fa-id-card"></i> {{ historialSeleccionado.paciente.dni || 'Sin DNI' }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="seccion-datos">
+        <div class="datos-cita">
+          <h4><i class="fas fa-calendar-check"></i> Información de la Cita</h4>
+          <p><strong>Fecha:</strong> {{ historialSeleccionado.cita.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p><strong>Motivo:</strong> {{ historialSeleccionado.cita.motivo }}</p>
+          <p><strong>Médico:</strong> Dr. {{ historialSeleccionado.medico.nombre }} {{ historialSeleccionado.medico.apPaterno }}</p>
+          <p><strong>Especialidad:</strong> {{ historialSeleccionado.cita.especialidad.nombre }}</p>
+        </div>
+        
+        <div class="datos-historial">
+          <h4><i class="fas fa-file-medical-alt"></i> Datos del Historial</h4>
+          <p><strong>Fecha creación:</strong> {{ historialSeleccionado.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p><strong>Diagnóstico principal:</strong> {{ historialSeleccionado.diagnosticoPrincipal }}</p>
+          <p *ngIf="historialSeleccionado.codigoCie"><strong>Código CIE-10:</strong> {{ historialSeleccionado.codigoCie }}</p>
+        </div>
+      </div>
+      
+      <div class="seccion-diagnostico">
+        <h4><i class="fas fa-diagnoses"></i> Diagnóstico Detallado</h4>
+        <p>{{ historialSeleccionado.notasMedicas || 'No se registraron notas médicas adicionales' }}</p>
+      </div>
+      
+      <div class="seccion-tratamientos" *ngIf="historialSeleccionado.tratamientos && historialSeleccionado.tratamientos.length > 0">
+        <h4><i class="fas fa-pills"></i> Tratamientos Prescritos</h4>
+        <div class="tratamientos-grid">
+          <div class="tratamiento-header">
+            <span>Medicamento</span>
+            <span>Dosis</span>
+            <span>Frecuencia</span>
+            <span>Duración</span>
+          </div>
+          <div class="tratamiento-item" *ngFor="let tratamiento of historialSeleccionado.tratamientos">
+            <span>{{ tratamiento.medicamento }}</span>
+            <span>{{ tratamiento.dosis }}</span>
+            <span>{{ tratamiento.frecuencia }}</span>
+            <span>{{ tratamiento.duracion }}</span>
+          </div>
+        </div>
+        
+        <div class="instrucciones-tratamiento">
+          <h5><i class="fas fa-info-circle"></i> Instrucciones Adicionales</h5>
+          <div *ngFor="let tratamiento of historialSeleccionado.tratamientos">
+            <p *ngIf="tratamiento.instrucciones"><strong>{{ tratamiento.medicamento }}:</strong> {{ tratamiento.instrucciones }}</p>
+          </div>
+          <p *ngIf="!historialSeleccionado.tratamientos[0]?.instrucciones">No se registraron instrucciones adicionales</p>
+        </div>
+      </div>
+      
+      <div class="seccion-observaciones">
+        <h4><i class="fas fa-clipboard-list"></i> Observaciones y Seguimiento</h4>
+        <p>{{ historialSeleccionado.observaciones || 'No se registraron observaciones adicionales' }}</p>
+      </div>
+    </div>
+    
+    <div class="modal-acciones">
+      <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+      <button class="btn-descargar-modal" (click)="descargarHistorial(historialSeleccionado.idHistorial)">
+        <i class="fas fa-download"></i> Descargar PDF
+      </button>
+    </div>
+  </div>
+</div>

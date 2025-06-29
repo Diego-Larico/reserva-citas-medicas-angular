@@ -8,6 +8,7 @@ import { HitorialComponent } from './pages/hitorial/hitorial.component';
 import { MiPerfilComponent } from './pages/mi-perfil/mi-perfil.component';
 import { MiAgendaMedicoComponent } from './pages/mi-agenda-medico/mi-agenda-medico.component';
 import { MisPacientesMedicoComponent } from './pages/mis-pacientes-medico/mis-pacientes-medico.component';
+import { HistorialesMedicosMedicoComponent } from './pages/historiales-medicos-medico/historiales-medicos-medico.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -22,6 +23,7 @@ export const routes: Routes = [
       { path: 'perfil', component: MiPerfilComponent },
       { path: 'agenda', component: MiAgendaMedicoComponent },
       { path: 'pacientes', component: MisPacientesMedicoComponent },
+      { path: 'historiales', component: HistorialesMedicosMedicoComponent },
       // Redirección condicional según el rol
       {
         path: '',
