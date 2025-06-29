@@ -74,11 +74,18 @@
       <div class="historial-header">
         <div class="paciente-info">
           <div class="paciente-avatar">
-            <img [src]="'https://ui-avatars.com/api/?name=' + (historial.paciente?.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historial.paciente?.nombre }}">
+            <img [src]="'https://ui-avatars.com/api/?name=' + ((historial.paciente?.nombre ? historial.paciente?.nombre.charAt(0) : '') + (historial.paciente?.apPaterno ? '+' + historial.paciente?.apPaterno.charAt(0) : '') || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historial.paciente?.nombre }}">
           </div>
           <div>
             <h3>{{ historial.paciente?.nombre }} {{ historial.paciente?.apPaterno }}</h3>
-            <p *ngIf="historial.paciente"><i class="fas fa-birthday-cake"></i> {{ calcularEdad(historial.paciente?.fechaNacimiento) }} años</p>
+            <ng-container *ngIf="historial.paciente">
+              <ng-container *ngIf="calcularEdad(historial.paciente?.fechaNacimiento) === 'fecha no registrada'; else mostrarEdad">
+                <p><i class="fas fa-birthday-cake"></i> fecha no registrada</p>
+              </ng-container>
+              <ng-template #mostrarEdad>
+                <p><i class="fas fa-birthday-cake"></i> {{ calcularEdad(historial.paciente?.fechaNacimiento) }} años</p>
+              </ng-template>
+            </ng-container>
             <p *ngIf="!historial.paciente" class="text-muted">Cargando paciente...</p>
           </div>
         </div>
@@ -110,8 +117,8 @@
         <button class="btn-ver-detalle" (click)="verDetalleHistorial(historial.idHistorial)">
           <i class="fas fa-eye"></i> Ver Detalle Completo
         </button>
-        <button class="btn-descargar" (click)="descargarHistorial(historial.idHistorial)">
-          <i class="fas fa-download"></i> Descargar PDF
+        <button class="btn-descargar" (click)="imprimirHistorial(historial.idHistorial)">
+          <i class="fas fa-download"></i> Imprimir
         </button>
       </div>
     </div>
@@ -134,7 +141,7 @@
       <div class="seccion-paciente">
         <div class="paciente-info">
           <div class="paciente-avatar">
-            <img [src]="'https://ui-avatars.com/api/?name=' + (historialSeleccionado.paciente?.nombre || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historialSeleccionado.paciente?.nombre }}">
+            <img [src]="'https://ui-avatars.com/api/?name=' + ((historialSeleccionado.paciente?.nombre ? historialSeleccionado.paciente?.nombre.charAt(0) : '') + (historialSeleccionado.paciente?.apPaterno ? '+' + historialSeleccionado.paciente?.apPaterno.charAt(0) : '') || 'Paciente') + '&background=0D8ABC&color=fff'" alt="{{ historialSeleccionado.paciente?.nombre }}">
           </div>
           <div>
             <h4>{{ historialSeleccionado.paciente?.nombre }} {{ historialSeleccionado.paciente?.apPaterno }} {{ historialSeleccionado.paciente?.apMaterno }}</h4>
@@ -202,8 +209,8 @@
     
     <div class="modal-acciones">
       <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
-      <button class="btn-descargar-modal" (click)="descargarHistorial(historialSeleccionado.idHistorial)">
-        <i class="fas fa-download"></i> Descargar PDF
+      <button class="btn-descargar-modal" (click)="imprimirHistorial(historialSeleccionado.idHistorial)">
+        <i class="fas fa-download"></i> Imprimir
       </button>
     </div>
   </div>

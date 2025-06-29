@@ -81,6 +81,7 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
           this.historiales = historialesCompletos;
           this.historialesFiltrados = [...this.historiales];
           this.cargando = false;
+          this.cargarResumen(); // Actualiza el resumen dinámicamente
         });
       },
       error: () => {
@@ -90,12 +91,30 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
   }
 
   cargarResumen(): void {
-    // Simulación de resumen estático
+    // Calcular resumen dinámicamente
+    const totalHistoriales = this.historiales.length;
+    const pacientesSet = new Set(
+      this.historiales
+        .filter(h => h.paciente)
+        .map(h => h.paciente.dni || h.paciente.idUsuario || h.paciente.nombre + h.paciente.apPaterno)
+    );
+    let tratamientosRecetados = 0;
+    let diagnosticos: {[key: string]: number} = {};
+    this.historiales.forEach(h => {
+      if (h.tratamientos && Array.isArray(h.tratamientos)) {
+        tratamientosRecetados += h.tratamientos.length;
+      }
+      if (h.diagnosticoPrincipal) {
+        diagnosticos[h.diagnosticoPrincipal] = (diagnosticos[h.diagnosticoPrincipal] || 0) + 1;
+      }
+    });
+    // Diagnóstico más común (puedes mostrar el nombre si lo deseas)
+    const diagnosticosComunes = Object.keys(diagnosticos).length;
     this.resumen = {
-      totalHistoriales: 5,
-      pacientesUnicos: 3,
-      tratamientosRecetados: 7,
-      diagnosticosComunes: 2
+      totalHistoriales,
+      pacientesUnicos: pacientesSet.size,
+      tratamientosRecetados,
+      diagnosticosComunes
     };
   }
 
@@ -140,8 +159,8 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
     this.historialSeleccionado = null;
   }
 
-  calcularEdad(fechaNacimiento: string): number {
-    if (!fechaNacimiento) return 0;
+  calcularEdad(fechaNacimiento: string): string {
+    if (!fechaNacimiento) return 'fecha no registrada';
     const nacimiento = new Date(fechaNacimiento);
     const hoy = new Date();
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
@@ -149,7 +168,7 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
     if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
       edad--;
     }
-    return edad;
+    return edad.toString();
   }
 
   descargarHistorial(idHistorial: number): void {
@@ -159,5 +178,56 @@ export class HistorialesMedicosMedicoComponent implements OnInit {
     link.href = window.URL.createObjectURL(blob);
     link.download = `historial_${idHistorial}.pdf`;
     link.click();
+  }
+
+  imprimirHistorial(idHistorial: number): void {
+    // Busca el historial por id
+    const historial = this.historiales.find(h => h.idHistorial === idHistorial);
+    if (!historial) return;
+    // Crea una ventana nueva con los detalles de la cita/historial
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Imprimir Historial Médico</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          h2 { color: #0D8ABC; }
+          .section { margin-bottom: 20px; }
+          .label { font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <h2>Historial Médico</h2>
+        <div class="section">
+          <span class="label">Paciente:</span> ${historial.paciente?.nombre || ''} ${historial.paciente?.apPaterno || ''} ${historial.paciente?.apMaterno || ''}<br>
+          <span class="label">Edad:</span> ${this.calcularEdad(historial.paciente?.fechaNacimiento)}<br>
+          <span class="label">DNI:</span> ${historial.paciente?.dni || 'Sin DNI'}<br>
+        </div>
+        <div class="section">
+          <span class="label">Fecha de la cita:</span> ${historial.cita?.fecha_hora ? (new Date(historial.cita.fecha_hora)).toLocaleString() : ''}<br>
+          <span class="label">Motivo:</span> ${historial.cita?.motivo || ''}<br>
+          <span class="label">Médico:</span> Dr. ${historial.medico?.nombre || ''} ${historial.medico?.apPaterno || ''}<br>
+          <span class="label">Especialidad:</span> ${historial.cita?.especialidad?.nombre || ''}<br>
+        </div>
+        <div class="section">
+          <span class="label">Diagnóstico principal:</span> ${historial.diagnosticoPrincipal}<br>
+          <span class="label">Notas médicas:</span> ${historial.notasMedicas || 'Sin notas'}<br>
+        </div>
+        <div class="section">
+          <span class="label">Tratamientos:</span><br>
+          ${(historial.tratamientos && historial.tratamientos.length > 0) ? historial.tratamientos.map((t: any) => `
+            <div>- ${t.medicamento} (${t.dosis}, ${t.frecuencia}, ${t.duracion})</div>
+          `).join('') : 'Sin tratamientos'}
+        </div>
+        <div class="section">
+          <span class="label">Observaciones:</span> ${historial.observaciones || 'No se registraron observaciones'}
+        </div>
+        <script>window.print();</script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 }
