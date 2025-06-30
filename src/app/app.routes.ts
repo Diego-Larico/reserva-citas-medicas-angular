@@ -11,9 +11,11 @@ import { MisPacientesMedicoComponent } from './pages/mis-pacientes-medico/mis-pa
 import { HistorialesMedicosMedicoComponent } from './pages/historiales-medicos-medico/historiales-medicos-medico.component';
 import { GestionarUsuariosAdminComponent } from './pages/gestionar-usuarios-admin/gestionar-usuarios-admin.component';
 import { GestionarEspecialidadesAdminComponent } from './pages/gestionar-especialidades-admin/gestionar-especialidades-admin.component';
+import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
+  { path: 'sign-up', component: SignUpComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,
