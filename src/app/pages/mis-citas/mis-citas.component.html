@@ -64,6 +64,9 @@
         <button *ngIf="cita.estado === 'Pendiente'" class="btn-cancelar" (click)="cancelarCita(cita.idCita)">
           <i class="fas fa-times-circle"></i> Cancelar
         </button>
+        <button *ngIf="cita.estado !== 'Cancelada'" class="btn-imprimir" (click)="imprimirCita(cita)">
+          <i class="fas fa-print"></i> Imprimir
+        </button>
         <button class="btn-detalle" (click)="verDetalleCita(cita)">
           <i class="fas fa-info-circle"></i> Detalles
         </button>
@@ -115,6 +118,9 @@
       
       <div class="modal-acciones">
         <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+        <button *ngIf="citaSeleccionada.estado !== 'Cancelada'" class="btn-imprimir" (click)="imprimirCita(citaSeleccionada)">
+          <i class="fas fa-print"></i> Imprimir
+        </button>
       </div>
     </div>
   </div>

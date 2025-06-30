@@ -131,4 +131,42 @@ export class MisCitasComponent implements OnInit {
   irANuevaCita() {
     this.router.navigate(['/dashboard/nueva-cita']);
   }
+
+  imprimirCita(cita: Cita) {
+    const especialidad = this.getEspecialidadNombre(cita.idEspecialidad);
+    const medico = this.getMedicoNombre(cita.idMedico);
+    const fecha = new Date(cita.fecha_hora).toLocaleString();
+    const motivo = cita.motivo || 'Consulta general';
+    const estado = cita.estado;
+    const html = `
+      <html>
+      <head>
+        <title>Detalle de Cita</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; color: #222; }
+          h2 { color: #1a5a9e; }
+          .detalle { margin: 20px 0; }
+          .detalle label { font-weight: bold; display: inline-block; min-width: 120px; }
+          .estado { font-weight: bold; color: #388e3c; }
+        </style>
+      </head>
+      <body>
+        <h2>Detalle de la Cita</h2>
+        <div class='detalle'><label>Fecha y hora:</label> ${fecha}</div>
+        <div class='detalle'><label>Médico:</label> Dr. ${medico}</div>
+        <div class='detalle'><label>Especialidad:</label> ${especialidad}</div>
+        <div class='detalle'><label>Motivo:</label> ${motivo}</div>
+        <div class='detalle'><label>Estado:</label> <span class='estado'>${estado}</span></div>
+      </body>
+      </html>
+    `;
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 300);
+    }
+  }
 }
