@@ -25,9 +25,15 @@ export class HistorialClinicoService {
   }
 
   // Obtener todos los historiales y filtrar por médico
-    obtenerHistorialesPorMedico(idMedico: number) {
+  obtenerHistorialesPorMedico(idMedico: number) {
     return this.http.get<any[]>(`${this.apiUrl}/GetHistorialClinico`).pipe(
-        map(historiales => historiales.filter(h => h.idMedico === idMedico))
+      map(historiales => historiales.filter(h => h.idMedico === idMedico))
     );
-}
+  }
+
+  getHistorialesPorCitas(idsCita: number[]): Observable<HistorialClinico[]> {
+    return this.http.get<HistorialClinico[]>(`${this.apiUrl}/GetHistorialClinico`).pipe(
+      map(historiales => historiales.filter(h => idsCita.includes(h.idCita)))
+    );
+  }
 }
