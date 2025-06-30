@@ -17,10 +17,12 @@
         <option value="Completada">Completadas</option>
       </select>
     </div>
-    
     <div class="filtro-group">
       <label for="filtroFecha"><i class="fas fa-calendar-alt me-1"></i>Filtrar por fecha:</label>
       <input type="date" id="filtroFecha" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()">
+      <button class="btn-refresh" (click)="limpiarFiltros()">
+        <i class="fas fa-eraser"></i> Limpiar Filtros
+      </button>
     </div>
   </div>
 

@@ -310,6 +310,26 @@ body {
     background: #d1e5f7;
 }
 
+.btn-refresh {
+    background: #e1ecf8;
+    color: #2a7cc7;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: fit-content;
+    align-self: center;
+}
+
+.btn-refresh:hover {
+    background: #d1e5f7;
+}
+
 /* Modal de detalles */
 .modal-backdrop {
     position: fixed;

@@ -62,6 +62,12 @@ export class MisCitasComponent implements OnInit {
     });
   }
 
+  limpiarFiltros() {
+    this.filtroEstado = 'todas';
+    this.filtroFecha = '';
+    this.aplicarFiltros();
+  }
+
   confirmarCita(idCita: number) {
     // Implementar lógica de confirmación
   }
