@@ -1,7 +1,7 @@
 <div class="citas-container">
   <div class="citas-header">
     <h2><i class="fas fa-calendar-check me-2"></i> Mis Citas</h2>
-    <button class="btn-nueva-cita" routerLink="/dashboard/nueva-cita">
+    <button class="btn-nueva-cita" (click)="irANuevaCita()">
       <i class="fas fa-plus-circle me-1"></i> Nueva Cita
     </button>
   </div>
@@ -30,7 +30,7 @@
     <div *ngIf="citasFiltradas.length === 0" class="no-citas">
       <i class="fas fa-calendar-times"></i>
       <p>No tienes citas programadas</p>
-      <button class="btn-agendar" routerLink="/dashboard/nueva-cita">Agendar nueva cita</button>
+      <button class="btn-agendar" (click)="irANuevaCita()">Agendar nueva cita</button>
     </div>
 
     <div *ngFor="let cita of citasFiltradas" class="cita-card">

@@ -6,6 +6,7 @@ import { EspecialidadService, Especialidad } from '../../services/especialidad.s
 import { MedicoService } from '../../services/medico.service';
 import { Usuario } from '../../models/usuario';
 import { ViewEncapsulation } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-citas',
@@ -28,7 +29,8 @@ export class MisCitasComponent implements OnInit {
   constructor(
     private citaService: CitaService,
     private especialidadService: EspecialidadService,
-    private medicoService: MedicoService
+    private medicoService: MedicoService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -82,5 +84,9 @@ export class MisCitasComponent implements OnInit {
 
   cerrarModal() {
     this.citaSeleccionada = null;
+  }
+
+  irANuevaCita() {
+    this.router.navigate(['/dashboard/nueva-cita']);
   }
 }
