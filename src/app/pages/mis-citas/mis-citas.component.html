@@ -61,10 +61,7 @@
       </div>
       
       <div class="cita-acciones">
-        <button *ngIf="cita.estado === 'Pendiente'" class="btn-confirmar" (click)="confirmarCita(cita.idCita)">
-          <i class="fas fa-check-circle"></i> Confirmar
-        </button>
-        <button *ngIf="cita.estado === 'Pendiente' || cita.estado === 'Confirmada'" class="btn-cancelar" (click)="cancelarCita(cita.idCita)">
+        <button *ngIf="cita.estado === 'Pendiente'" class="btn-cancelar" (click)="cancelarCita(cita.idCita)">
           <i class="fas fa-times-circle"></i> Cancelar
         </button>
         <button class="btn-detalle" (click)="verDetalleCita(cita)">
@@ -118,9 +115,6 @@
       
       <div class="modal-acciones">
         <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
-        <button *ngIf="citaSeleccionada.estado === 'Pendiente'" class="btn-confirmar-modal" (click)="confirmarCita(citaSeleccionada.idCita)">
-          Confirmar cita
-        </button>
       </div>
     </div>
   </div>

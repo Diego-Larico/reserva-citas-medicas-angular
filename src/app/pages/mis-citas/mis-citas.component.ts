@@ -70,12 +70,54 @@ export class MisCitasComponent implements OnInit {
     this.aplicarFiltros();
   }
 
-  confirmarCita(idCita: number) {
-    // Implementar lógica de confirmación
-  }
-
   cancelarCita(idCita: number) {
-    // Implementar lógica de cancelación
+    const cita = this.citas.find(c => c.idCita === idCita);
+    if (!cita) return;
+    // SweetAlert2 confirmación
+    import('sweetalert2').then(Swal => {
+      Swal.default.fire({
+        title: '¿Cancelar cita?',
+        text: '¿Estás seguro de que deseas cancelar esta cita? Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'No',
+        background: '#fff',
+        color: '#1a5a9e',
+        customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+      }).then(result => {
+        if (result.isConfirmed) {
+          // Cambiar estado a Cancelada y actualizar en la base de datos
+          const citaCancelada = { ...cita, estado: 'Cancelada' };
+          this.citaService.actualizarCita(citaCancelada).subscribe({
+            next: () => {
+              cita.estado = 'Cancelada';
+              this.aplicarFiltros();
+              Swal.default.fire({
+                icon: 'success',
+                title: 'Cita cancelada',
+                text: 'La cita fue cancelada exitosamente.',
+                confirmButtonText: 'Aceptar',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
+            },
+            error: () => {
+              Swal.default.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo cancelar la cita. Intenta nuevamente.',
+                confirmButtonText: 'Aceptar',
+                background: '#fff',
+                color: '#1a5a9e',
+                customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+              });
+            }
+          });
+        }
+      });
+    });
   }
 
   verDetalleCita(cita: Cita) {
