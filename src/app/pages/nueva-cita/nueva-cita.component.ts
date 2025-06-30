@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EspecialidadService, Especialidad } from '../../services/especialidad.service';
 import { MedicoService } from '../../services/medico.service';
 import { CitaService, Cita } from '../../services/cita.service';
@@ -38,7 +38,8 @@ export class NuevaCitaComponent implements OnInit {
     private router: Router,
     private especialidadService: EspecialidadService,
     private medicoService: MedicoService,
-    private citaService: CitaService
+    private citaService: CitaService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -47,14 +48,22 @@ export class NuevaCitaComponent implements OnInit {
       const user = JSON.parse(userData);
       this.nuevaCita.idPaciente = user.idUsuario;
     }
-    this.especialidadService.getEspecialidades().subscribe(data => {
-      this.especialidades = data.filter(e => e.idEspecialidad !== 1);
-    });
-    this.medicoService.getMedicos().subscribe(data => {
-      // Filtrar solo médicos (idRol 2)
-      this.medicos = data.filter(m => m.idRol === 2);
-      // Si ya hay una especialidad seleccionada, filtrar los médicos por esa especialidad
-      this.cargarMedicos();
+    this.route.queryParams.subscribe(params => {
+      const especialidadParam = params['especialidad'];
+      const medicoParam = params['medico'];
+      this.especialidadService.getEspecialidades().subscribe(data => {
+        this.especialidades = data.filter(e => e.idEspecialidad !== 1);
+        if (especialidadParam) {
+          this.nuevaCita.idEspecialidad = +especialidadParam;
+        }
+        this.medicoService.getMedicos().subscribe(data => {
+          this.medicos = data.filter(m => m.idRol === 2);
+          this.cargarMedicos();
+          if (medicoParam) {
+            this.nuevaCita.idMedico = +medicoParam;
+          }
+        });
+      });
     });
   }
 

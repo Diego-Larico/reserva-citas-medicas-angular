@@ -48,7 +48,7 @@ export class MedicosComponent implements OnInit {
           ...m,
           especialidad: this.especialidades.find(e => e.idEspecialidad === m.idEspecialidad),
           fotoPerfil: (m as any).imagen || avatarUrl,
-          horarios: ['Lunes a Viernes: 09:00 - 16:30']
+          horarios: ['Lunes a Viernes: 09:00 - 20:00']
         };
       });
       this.medicosFiltrados = [...this.medicos];
@@ -75,7 +75,10 @@ export class MedicosComponent implements OnInit {
     const medico = this.medicos.find(m => m.idUsuario === idUsuario);
     if (medico) {
       this.router.navigate(['/dashboard/nueva-cita'], {
-        queryParams: { medico: idUsuario, especialidad: medico.idEspecialidad }
+        queryParams: {
+          medico: idUsuario,
+          especialidad: medico.idEspecialidad
+        }
       });
     }
   }
