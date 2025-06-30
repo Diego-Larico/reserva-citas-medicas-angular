@@ -66,7 +66,8 @@ export class HitorialComponent implements OnInit {
 
   cargarEspecialidades(): void {
     this.especialidadService.getEspecialidades().subscribe(data => {
-      this.especialidades = data;
+      // Filtrar especialidades para no mostrar 'sin_especialidad'
+      this.especialidades = data.filter(e => e.nombre.toLowerCase() !== 'sin_especialidad');
       this.cargarRegistros();
     });
   }
