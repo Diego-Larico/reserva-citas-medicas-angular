@@ -86,7 +86,7 @@
       <div class="modal-body">
         <div class="detalle-item">
           <label><i class="fas fa-calendar-alt"></i> Fecha y hora:</label>
-          <p>{{ citaSeleccionada.fecha_hora | date:'EEEE, d MMMM y, HH:mm' }}</p>
+          <p>{{ citaSeleccionada.fecha_hora | date:'EEEE, d MMMM y, HH:mm':'':'es' }}</p>
         </div>
         
         <div class="detalle-item">
@@ -105,14 +105,15 @@
         
         <div class="detalle-item">
           <label><i class="fas fa-info-circle"></i> Estado:</label>
-          <p [ngClass]="{
-            'estado-pendiente': citaSeleccionada.estado === 'Pendiente',
-            'estado-confirmada': citaSeleccionada.estado === 'Confirmada',
-            'estado-cancelada': citaSeleccionada.estado === 'Cancelada',
-            'estado-completada': citaSeleccionada.estado === 'Completada'
-          }">
+          <span class="cita-estado"
+            [ngClass]="{
+              'estado-pendiente': citaSeleccionada.estado === 'Pendiente',
+              'estado-confirmada': citaSeleccionada.estado === 'Confirmada',
+              'estado-cancelada': citaSeleccionada.estado === 'Cancelada',
+              'estado-completada': citaSeleccionada.estado === 'Completada'
+            }">
             {{ citaSeleccionada.estado }}
-          </p>
+          </span>
         </div>
       </div>
       
