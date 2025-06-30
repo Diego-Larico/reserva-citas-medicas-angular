@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -13,12 +13,21 @@ import { HttpClientModule } from '@angular/common/http';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   error = '';
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit() {
+    // Si hay un email en queryParams, autorrellenar el campo email
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email');
+    if (email) {
+      this.email = email;
+    }
+  }
 
   login() {
     console.log('Datos enviados:', this.email, this.password);
