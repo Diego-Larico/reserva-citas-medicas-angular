@@ -10,6 +10,7 @@ import { MiAgendaMedicoComponent } from './pages/mi-agenda-medico/mi-agenda-medi
 import { MisPacientesMedicoComponent } from './pages/mis-pacientes-medico/mis-pacientes-medico.component';
 import { HistorialesMedicosMedicoComponent } from './pages/historiales-medicos-medico/historiales-medicos-medico.component';
 import { GestionarUsuariosAdminComponent } from './pages/gestionar-usuarios-admin/gestionar-usuarios-admin.component';
+import { GestionarEspecialidadesAdminComponent } from './pages/gestionar-especialidades-admin/gestionar-especialidades-admin.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -26,6 +27,7 @@ export const routes: Routes = [
       { path: 'pacientes', component: MisPacientesMedicoComponent },
       { path: 'historiales', component: HistorialesMedicosMedicoComponent },
       { path: 'gestionar-usuarios', component: GestionarUsuariosAdminComponent },
+      { path: 'gestionar-especialidades', component: GestionarEspecialidadesAdminComponent },
       // Redirección condicional según el rol
       {
         path: '',

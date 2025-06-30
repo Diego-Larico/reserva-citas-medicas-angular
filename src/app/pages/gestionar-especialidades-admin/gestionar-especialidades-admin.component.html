@@ -1,0 +1,87 @@
+<div class="especialidades-container">
+  <div class="header">
+    <h2><i class="fas fa-stethoscope me-2"></i> Gestionar Especialidades Médicas</h2>
+    <button class="btn-nueva-especialidad" (click)="abrirModalCrearEspecialidad()">
+      <i class="fas fa-plus-circle me-1"></i> Nueva Especialidad
+    </button>
+  </div>
+
+  <div class="filtros-container">
+    <div class="search-group">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Buscar especialidad..." 
+             [(ngModel)]="filtroBusqueda" (input)="aplicarFiltros()">
+    </div>
+    <button class="btn-refresh" (click)="limpiarFiltros()">
+      <i class="fas fa-eraser"></i> Limpiar Filtros
+    </button>
+  </div>
+
+  <div class="especialidades-list">
+    <div *ngIf="especialidadesFiltradas.length === 0" class="no-especialidades">
+      <i class="fas fa-clipboard-list"></i>
+      <p>No se encontraron especialidades médicas</p>
+    </div>
+
+    <div *ngFor="let especialidad of especialidadesFiltradas" class="especialidad-card">
+      <div class="especialidad-header">
+        <div class="especialidad-icon">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <div class="especialidad-info">
+          <h3>{{ especialidad.nombre }}</h3>
+          <p *ngIf="especialidad.totalMedicos > 0">{{ especialidad.totalMedicos }} médico(s)</p>
+          <p *ngIf="especialidad.totalCitas > 0">{{ especialidad.totalCitas }} cita(s)</p>
+        </div>
+      </div>
+      
+      <div class="especialidad-acciones">
+        <button class="btn-editar" (click)="editarEspecialidad(especialidad)">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="btn-eliminar" (click)="eliminarEspecialidad(especialidad.idEspecialidad)" 
+                [disabled]="especialidad.totalMedicos > 0 || especialidad.totalCitas > 0">
+          <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+      </div>
+      
+      <div *ngIf="especialidad.totalMedicos > 0 || especialidad.totalCitas > 0" class="especialidad-advertencia">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>No se puede eliminar porque tiene médicos o citas asociadas</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para crear/editar especialidad -->
+<div *ngIf="modalAbierto" class="modal-backdrop" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-modal" (click)="cerrarModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="modal-header">
+      <h3>{{ modalAccion === 'crear' ? 'Crear Nueva Especialidad' : 'Editar Especialidad' }}</h3>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="especialidadForm">
+        <div class="form-group">
+          <label for="nombre">Nombre de la Especialidad</label>
+          <input type="text" id="nombre" formControlName="nombre" placeholder="Ej: Cardiología" required>
+          <div *ngIf="especialidadForm.get('nombre')?.invalid && especialidadForm.get('nombre')?.touched" 
+               class="error-message">
+            El nombre es obligatorio
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-acciones">
+      <button class="btn-cerrar" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-guardar" (click)="guardarEspecialidad()" [disabled]="especialidadForm.invalid">
+        <i class="fas fa-save"></i> {{ modalAccion === 'crear' ? 'Crear Especialidad' : 'Guardar Cambios' }}
+      </button>
+    </div>
+  </div>
+</div>
