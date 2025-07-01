@@ -13,9 +13,12 @@ import { GestionarUsuariosAdminComponent } from './pages/gestionar-usuarios-admi
 import { GestionarEspecialidadesAdminComponent } from './pages/gestionar-especialidades-admin/gestionar-especialidades-admin.component';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
+import { RecuperarPasswordComponent } from './pages/recuperar-password/recuperar-password.component';
+
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'sign-up', component: SignUpComponent },
+  { path: 'recuperar-password', component: RecuperarPasswordComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,

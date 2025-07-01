@@ -22,18 +22,13 @@ export class RecuperarPasswordComponent {
   mensaje: string = '';
   cargando: boolean = false;
 
-  @Output() cerrar = new EventEmitter<string>();
+
 
   constructor(private usuarioService: UsuarioService, private router: Router) {}
 
+
   cerrarRecuperar(): void {
-    this.step = 'recuperar';
-    this.correo = '';
-    this.codigo = '';
-    this.nuevaContrasena = '';
-    this.confirmarContrasena = '';
-    this.mensaje = '';
-    this.cerrar.emit();
+    this.router.navigate(['/']);
   }
 
   async enviarCodigo() {
@@ -91,7 +86,7 @@ export class RecuperarPasswordComponent {
       const ok = await this.usuarioService.actualizarPasswordPorEmail(this.correo, this.nuevaContrasena).toPromise();
       if (ok) {
         window.alert('Tu contraseña ha sido actualizada correctamente.');
-        this.cerrar.emit(this.correo);
+        this.router.navigate(['/'], { queryParams: { email: this.correo } });
       } else {
         this.mensaje = 'No se pudo actualizar la contraseña. Intenta nuevamente.';
       }
