@@ -30,9 +30,13 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    console.log('Datos enviados:', this.email, this.password);
+    // ...validación de campos...
     this.authService.login(this.email, this.password).subscribe({
       next: (usuario) => {
+        if (usuario && usuario.activo === false) {
+          alert('Usuario desactivado, comuníquese con un administrador');
+          return;
+        }
         console.log('Login correcto', usuario);
         localStorage.setItem('usuario', JSON.stringify(usuario));
         // Guardar idUsuario para acceso global
@@ -41,8 +45,9 @@ export class LoginComponent implements OnInit {
         }
         this.router.navigate(['/dashboard']);
       },
-      error: (error) => {
-        console.error('Error en login', error);
+      error: (err) => {
+        // ...manejo de error de credenciales...
+        console.error('Error en login', err);
         alert('Credenciales incorrectas');
       }
     });
