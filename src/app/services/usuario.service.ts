@@ -36,4 +36,20 @@ export class UsuarioService {
     // Usar el endpoint específico para cambiar estado
     return this.http.put<boolean>(`${this.apiUrl}/CambiarEstadoUsuario`, { idUsuario, activo });
   }
+
+  // Recuperación de contraseña
+  enviarCodigoRecuperacion(email: string): Observable<boolean> {
+    // Llama al endpoint que envía el código al correo
+    return this.http.post<boolean>(`${this.apiUrl}/EnviarCodigoRecuperacion`, { email });
+  }
+
+  validarCodigoRecuperacion(email: string, codigo: string): Observable<boolean> {
+    // Llama al endpoint que valida el código
+    return this.http.post<boolean>(`${this.apiUrl}/ValidarCodigoRecuperacion`, { email, codigo });
+  }
+
+  actualizarPasswordPorEmail(email: string, nuevaPassword: string): Observable<boolean> {
+    // Llama al endpoint que actualiza la contraseña por email
+    return this.http.put<boolean>(`${this.apiUrl}/ActualizarPasswordPorEmail`, { email, password: nuevaPassword });
+  }
 }

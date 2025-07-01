@@ -5,18 +5,21 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Usuario } from '../../models/usuario';
 import { HttpClientModule } from '@angular/common/http';
+import { RecuperarPasswordComponent } from '../recuperar-password/recuperar-password.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule, RecuperarPasswordComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
+
 export class LoginComponent implements OnInit {
   email = '';
   password = '';
   error = '';
+  mostrarRecuperarPassword = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -51,5 +54,12 @@ export class LoginComponent implements OnInit {
         alert('Credenciales incorrectas');
       }
     });
+  }
+
+  onRecuperarPasswordCerrado(email: string) {
+    this.mostrarRecuperarPassword = false;
+    if (email) {
+      this.email = email;
+    }
   }
 }
