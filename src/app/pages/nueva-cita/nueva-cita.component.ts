@@ -103,6 +103,19 @@ export class NuevaCitaComponent implements OnInit {
       this.mensajeError = 'Por favor complete todos los campos obligatorios';
       return;
     }
+    if (!this.nuevaCita.motivo || this.nuevaCita.motivo.trim().length === 0) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Motivo obligatorio',
+        text: 'Debe ingresar el motivo de la consulta para agendar la cita.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33',
+        background: '#fff',
+        color: '#1a5a9e',
+        customClass: { popup: 'swal2-popup-custom', confirmButton: 'swal2-confirm-custom' }
+      });
+      return;
+    }
     // Confirmación con SweetAlert2
     const result = await Swal.fire({
       title: '¿Confirmar cita?',
