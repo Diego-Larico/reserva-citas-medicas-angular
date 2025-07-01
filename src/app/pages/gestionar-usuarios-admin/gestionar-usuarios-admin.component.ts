@@ -308,6 +308,12 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     return esp ? esp.nombre : '';
   }
 
+  especialidadesFiltered() {
+    return this.especialidades.filter(
+      esp => esp.nombre && esp.nombre.toLowerCase() !== 'sin especialidad' && esp.nombre.toLowerCase() !== 'sin_especialidad'
+    );
+  }
+
   async cambiarEstadoUsuario(idUsuario: number, activo: boolean): Promise<void> {
     const confirm = await Swal.fire({
       title: activo ? '¿Activar usuario?' : '¿Desactivar usuario?',

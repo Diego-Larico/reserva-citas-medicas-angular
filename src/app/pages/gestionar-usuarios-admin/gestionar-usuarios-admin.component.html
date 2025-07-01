@@ -126,8 +126,9 @@
           <div class="form-group" *ngIf="usuarioForm.get('idRol')?.value == 2">
             <label for="especialidad">Especialidad</label>
             <select id="especialidad" formControlName="idEspecialidad">
-              <option value="">Sin especialidad</option>
-              <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+              <option *ngFor="let esp of especialidadesFiltered()" [value]="esp.idEspecialidad">
+                {{ esp.nombre }}
+              </option>
             </select>
           </div>
         </div>
@@ -209,8 +210,9 @@
           <div class="form-group" *ngIf="usuarioForm.get('idRol')?.value == 2">
             <label for="especialidad">Especialidad</label>
             <select id="especialidad" formControlName="idEspecialidad">
-              <option value="">Sin especialidad</option>
-              <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">{{ esp.nombre }}</option>
+              <option *ngFor="let esp of especialidadesFiltered()" [value]="esp.idEspecialidad">
+                {{ esp.nombre }}
+              </option>
             </select>
           </div>
         </div>
