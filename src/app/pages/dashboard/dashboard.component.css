@@ -66,6 +66,7 @@
 .dropdown-menu .dropdown-item {
   color: #ddd;
   padding: 0.5rem 1rem;
+  cursor: pointer;
 }
 
 .dropdown-menu .dropdown-item:hover {
