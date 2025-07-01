@@ -137,10 +137,8 @@
             <label for="password">Contraseña</label>
             <input type="password" id="password" formControlName="password" placeholder="Contraseña" required>
             <div *ngIf="usuarioForm.get('password')?.touched && usuarioForm.get('password')?.invalid" class="input-error">
-              <span *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
-              <span *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
+              <span *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</span>
             </div>
-            <div class="input-hint">Mínimo 6 caracteres.</div>
           </div>
           <div class="form-group">
             <label for="confirmPassword">Confirmar Contraseña</label>

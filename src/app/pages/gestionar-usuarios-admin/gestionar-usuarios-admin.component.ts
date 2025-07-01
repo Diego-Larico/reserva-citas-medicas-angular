@@ -44,7 +44,7 @@ export class GestionarUsuariosAdminComponent implements OnInit {
       apMaterno: [''],
       email: ['', [Validators.required, Validators.email]],
       usuario: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       idRol: [3, Validators.required],
       idEspecialidad: [null],
       activo: [true],
@@ -116,7 +116,7 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     // Quitar required de idEspecialidad
     this.usuarioForm.get('idEspecialidad')?.clearValidators();
     this.usuarioForm.get('idEspecialidad')?.updateValueAndValidity();
-    this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.usuarioForm.get('password')?.updateValueAndValidity();
     this.usuarioForm.reset({
       idRol: 3,
@@ -178,11 +178,20 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     if (this.modalAccion === 'crear') {
       const password = this.usuarioForm.get('password')?.value;
       const confirmPassword = this.usuarioForm.get('confirmPassword')?.value;
+      if (password.length < 8) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Contraseña demasiado corta',
+          text: 'La contraseña debe tener al menos 8 caracteres.',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
+      }
       if (password !== confirmPassword) {
         await Swal.fire({
           icon: 'error',
           title: 'Contraseñas no coinciden',
-          text: 'La contraseña y la confirmación no son iguales.',
+          text: 'Las contraseñas ingresadas no coinciden.',
           confirmButtonText: 'Aceptar'
         });
         return;
@@ -294,7 +303,7 @@ export class GestionarUsuariosAdminComponent implements OnInit {
     if (this.usuarioForm.contains('confirmPassword')) {
       this.usuarioForm.removeControl('confirmPassword');
     }
-    this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.usuarioForm.get('password')?.updateValueAndValidity();
   }
 
